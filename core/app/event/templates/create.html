@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Event{% endblock %}
+
+{% block main %}
+<div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input id="sidebar" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content flex flex-col">
+        {% include 'navbar.html' %}
+
+        <main class="">
+            <div class="min-w-full bg-green-500 h-16 flex justify-end px-4 md:px-6">
+                <h1 class="text-xl md:text-2xl lg:text-3xl pb-3 font-bold text-white self-end">
+                    EVENT MONITORING SYSTEM - CREATE
+                </h1>
+            </div>
+
+            <div class="p-4 md:p-6 lg:p-8">
+                <div class="p-5 shadow-md rounded-lg bg-white">
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+
+                        <!-- Event Name -->
+                        <div>
+                            <label class="label">
+                                <span class="label-text">Event Name <span class="text-red-500">*</span></span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="event_name" 
+                                value="{{ event_name }}" 
+                                class="input input-bordered w-full {% if 'event name' in messages|join:' '|lower %}input-error{% endif %}"
+                                placeholder="E.g. Executive Meeting"
+                                required
+                            >
+                            {% for m in messages %}
+                                {% if 'event name' in m.message|lower %}
+                                    <label class="label py-0"><span class="label-text-alt text-red-500">{{ m }}</span></label>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- Dates + Status Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <!-- From Date -->
+                            <div>
+                                <label class="label"><span class="label-text">From <span class="text-red-500">*</span></span></label>
+                                <input 
+                                    type="datetime-local" 
+                                    name="from_date" 
+                                    value="{{ from_date }}" 
+                                    class="input input-bordered w-full {% if 'from date' in messages|join:' '|lower %}input-error{% endif %}"
+                                    required
+                                >
+                                {% for m in messages %}
+                                    {% if 'from date' in m.message|lower %}
+                                        <label class="label py-0"><span class="label-text-alt text-red-500">{{ m }}</span></label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <!-- To Date -->
+                            <div>
+                                <label class="label"><span class="label-text">To <span class="text-red-500">*</span></span></label>
+                                <input 
+                                    type="datetime-local" 
+                                    name="to_date" 
+                                    value="{{ to_date }}" 
+                                    class="input input-bordered w-full {% if 'to date' in messages|join:' '|lower %}input-error{% endif %}"
+                                    required
+                                >
+                                {% for m in messages %}
+                                    {% if 'to date' in m.message|lower %}
+                                        <label class="label py-0"><span class="label-text-alt text-red-500">{{ m }}</span></label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <!-- Status -->
+                            <div>
+                                <label class="label"><span class="label-text">Status <span class="text-red-500">*</span></span></label>
+                                <select 
+                                    name="status" 
+                                    class="select select-bordered w-full {% if 'status' in messages|join:' '|lower %}select-error{% endif %}"
+                                    required
+                                >
+                                    <option value="" {% if not status %}selected{% endif %} disabled>Select Status</option>
+                                    <option value="ongoing" {% if status == 'ongoing' %}selected{% endif %}>Ongoing</option>
+                                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="done" {% if status == 'done' %}selected{% endif %}>Done</option>
+                                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                                {% for m in messages %}
+                                    {% if 'status' in m.message|lower %}
+                                        <label class="label py-0"><span class="label-text-alt text-red-500">{{ m }}</span></label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Coordinator + Venue Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Coordinator -->
+                            <div>
+                                <label class="label"><span class="label-text">Event Coordinator <span class="text-red-500">*</span></span></label>
+                                <input 
+                                    type="text" 
+                                    name="coordinator" 
+                                    value="{{ coordinator }}" 
+                                    class="input input-bordered w-full {% if 'coordinator' in messages|join:' '|lower %}input-error{% endif %}"
+                                    placeholder="John Jester Salen (Department)"
+                                    required
+                                >
+                                {% for m in messages %}
+                                    {% if 'coordinator' in m.message|lower %}
+                                        <label class="label py-0"><span class="label-text-alt text-red-500">{{ m }}</span></label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <!-- Venue -->
+                            <div>
+                                <label class="label"><span class="label-text">Venue <span class="text-red-500">*</span></span></label>
+                                <select 
+                                    name="venue" 
+                                    class="select select-bordered w-full {% if 'venue' in messages|join:' '|lower %}select-error{% endif %}"
+                                    required
+                                >
+                                    <option value="" {% if not selected_venue %}selected{% endif %} disabled>Select Venue</option>
+                                    {% for v in venues %}
+                                        <option value="{{ v.id }}" {% if selected_venue == v.id|stringformat:'s' %}selected{% endif %}>
+                                            {{ v.venue }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% for m in messages %}
+                                    {% if 'venue' in m.message|lower %}
+                                        <label class="label py-0"><span class="label-text-alt text-red-500">{{ m }}</span></label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Remarks -->
+                        <div>
+                            <label class="label"><span class="label-text">Remarks</span></label>
+                            <textarea 
+                                name="remarks" 
+                                class="textarea textarea-bordered w-full h-32"
+                                placeholder="E.g Rent 100 chairs etc (Optional)"
+                            >{{ remarks }}</textarea>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-accent">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% include 'sidebar.html' %}
+</div>
+{% endblock %}

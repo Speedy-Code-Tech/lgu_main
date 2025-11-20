@@ -1,0 +1,118 @@
+<!-- templates/calendar.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Event Calendar{% endblock %}
+
+{% block main %}
+<div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input id="sidebar" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content flex flex-col">
+        {% comment %} {% include 'navbar.html' %} {% endcomment %}
+
+        <main class="p-4 md:p-6 lg:p-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex flex-row gap-5 ">
+                    <img src="{% static 'images/icon.png' %}" style="width: 80px;" alt="">
+                    <div class="flex justify-center flex-col">
+                            <p class="poppins-bold text-3xl">Municipality of Labo</p>
+                          <h1 class="text-2xl font-bold mb-4 text-green-700">Event Calendar</h1>
+
+                    </div>
+                </div>
+                <hr class="my-5">
+                <div id="calendar"></div>
+            </div>
+        </main>
+    </div>
+    {% comment %} {% include 'sidebar.html' %} {% endcomment %}
+</div>
+
+<!-- MODAL TRIGGER (hidden checkbox) -->
+<input type="checkbox" id="event-modal" class="modal-toggle" />
+<div class="modal" role="dialog">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg" id="modal-title"></h3>
+        <div class="py-4 space-y-2 text-sm">
+            <p><strong>From:</strong> <span id="modal-from"></span></p>
+            <p><strong>To:</strong> <span id="modal-to"></span></p>
+            <p><strong>Venue:</strong> <span id="modal-venue"></span></p>
+            <p><strong>Coordinator:</strong> <span id="modal-coordinator"></span></p>
+            <p><strong>Status:</strong> <span id="modal-status" class="badge badge-sm"></span></p>
+            <p><strong>Remarks:</strong> <span id="modal-remarks"></span></p>
+        </div>
+        <div class="modal-action">
+            <label for="event-modal" class="btn btn-ghost">Close</label>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const modalCheckbox = document.getElementById('event-modal');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: '/event/api/events/',
+            height: 'auto',
+            editable: false,
+
+            eventClick: function(info) {
+                try {
+                    // Fill modal
+                    document.getElementById('modal-title').textContent = info.event.title || 'No Title';
+
+                    const start = info.event.start;
+                    const end = info.event.end;
+
+                    document.getElementById('modal-from').textContent = start ? formatDate(start) : '—';
+                    document.getElementById('modal-to').textContent = end ? formatDate(end) : '—';
+
+                    const props = info.event.extendedProps;
+                    document.getElementById('modal-venue').textContent = props.venue || 'No venue';
+                    document.getElementById('modal-coordinator').textContent = props.coordinator || '—';
+                    document.getElementById('modal-remarks').textContent = props.remarks || '—';
+
+                    const statusEl = document.getElementById('modal-status');
+                    const status = props.status;
+                    statusEl.textContent = status ? status.charAt(0).toUpperCase() + status.slice(1) : '—';
+                    statusEl.className = 'badge badge-sm ' + {
+                        'ongoing': 'badge-warning',
+                        'pending': 'badge-info',
+                        'done': 'badge-success',
+                        'cancelled': 'badge-error'
+                    }[status] || 'badge-ghost';
+
+                    // OPEN MODAL
+                    modalCheckbox.checked = true;
+
+                    info.jsEvent.preventDefault();
+                } catch (e) {
+                    console.error("Modal error:", e);
+                    alert("Error loading event details.");
+                }
+            }
+        });
+
+        calendar.render();
+    });
+
+    function formatDate(date) {
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+</script>
+{% endblock %}

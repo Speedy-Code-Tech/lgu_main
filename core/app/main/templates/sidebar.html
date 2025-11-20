@@ -1,0 +1,63 @@
+<!-- SIDEBAR -->
+{% load static %}
+
+<div class="drawer-side">
+  <label for="sidebar" class="drawer-overlay"></label>
+  <ul class="menu p-4 w-80 bg-white h-full text-base-content">
+    <div class="flex items-center gap-4 mb-8 p-4 text-stone-800 rounded-box">
+      <img src="{% static 'images/icon.png' %}" class="w-16 h-16 rounded-full" alt="LGU Logo" />
+      <div>
+        <div class="font-bold text-xl text-start">Municipality of Labo</div>
+        <div class="text-sm opacity-80">Camarines Norte</div>
+      </div>
+    </div>
+    <hr class="text-stone-800" />
+    <br />
+    <br />
+    <li class="text-[1.2em]">
+      <a href="{% url 'dashboard' %}"
+        class="
+                        {% if active == 'dashboard' %}
+          
+                            bg-green-500 text-white
+
+        {% else %}
+          text-gray-700 hover:bg-gray-100
+        {% endif %}
+                ">
+        <i class="fa-solid fa-chart-simple"></i> Dashboard
+      </a>
+    </li>
+    <li class="text-[1.2em]">
+      <a href="{% url 'event' %}"
+        class="
+                {% if active == 'event' %}
+          
+    bg-green-500 text-white
+
+        {% else %}
+          
+    text-gray-700 hover:bg-gray-100
+
+        {% endif %}
+                ">
+        <i class="fa-regular fa-calendar-days"></i> Event Venue
+      </a>
+    </li>
+    <li class="text-[1.2em]">
+      <a href="{% url 'education:view' %}"
+        class=" {% if active == 'education' %}
+                    bg-green-500 text-white 
+                {% else %} 
+                    text-gray-700 hover:bg-gray-100 
+                {% endif %}">
+        <i class="fas fa-book"></i> Education
+      </a>
+    </li>
+    <div class="mt-auto pt-8">
+      <li>
+        <a href="/accounts/logout/" class="btn text-red-500">Logout</a>
+      </li>
+    </div>
+  </ul>
+</div>

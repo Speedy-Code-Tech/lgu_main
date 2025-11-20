@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  LGU Admin Dashboard - Bayan ng Labo
+{% endblock %}
+
+{% block main %}
+  <div class="drawer lg:drawer-open bg-stone-100">
+    <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+    <!-- MOBILE TOP BAR -->
+    <div class="drawer-content flex flex-col">
+      {% include 'navbar.html' %}
+
+      <!-- MAIN CONTENT -->
+      <div class="p-6">
+        <h1 class="text-4xl font-bold mb-8">Welcome back, <span class="text-primary">{{ name }}</span></h1>
+
+        <!-- STATS CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <div class="stat bg-base-100 shadow-xl rounded-box">
+            <div class="stat-title">Total Residents</div>
+            <div class="stat-value text-primary">48,521</div>
+            <div class="stat-desc">↑ 2.1% from last month</div>
+          </div>
+          <div class="stat bg-base-100 shadow-xl rounded-box">
+            <div class="stat-title">Business Permits</div>
+            <div class="stat-value text-secondary">1,284</div>
+            <div class="stat-desc">Active this year</div>
+          </div>
+          <div class="stat bg-base-100 shadow-xl rounded-box">
+            <div class="stat-title">Revenue</div>
+            <div class="stat-value text-success">₱42.8M</div>
+            <div class="stat-desc">+12% vs target</div>
+          </div>
+          <div class="stat bg-base-100 shadow-xl rounded-box">
+            <div class="stat-title">Pending Requests</div>
+            <div class="stat-value text-warning">23</div>
+            <div class="stat-actions">
+              <button class="btn btn-sm btn-warning">View</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">Recent Transactions</h2>
+            <div class="overflow-x-auto">
+              <table class="table table-zebra w-full">
+                <thead>
+                  <tr>
+                    <th>Service</th>
+                    <th>Applicant</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Business Permit Renewal</td>
+                    <td>Juan Dela Cruz</td>
+                    <td>Nov 7, 2025</td>
+                    <td>
+                      <div class="badge badge-success">Approved</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Barangay Clearance</td>
+                    <td>Maria Santos</td>
+                    <td>Nov 6, 2025</td>
+                    <td>
+                      <div class="badge badge-warning">Pending</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Real Property Tax</td>
+                    <td>Pedro Reyes</td>
+                    <td>Nov 5, 2025</td>
+                    <td>
+                      <div class="badge badge-error">Overdue</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include 'sidebar.html' %}
+  </div>
+{% endblock %}

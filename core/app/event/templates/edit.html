@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}LGU Admin Event - Bayan ng Labo{% endblock %}
+
+{% block main %}
+<div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+    <!-- Page Content (Mobile + Desktop) -->
+    <div class="drawer-content flex flex-col">
+        {% include 'navbar.html' %}
+
+        <!-- Main Content -->
+        
+        <main class="">
+<div class="min-w-full bg-green-500 h-16 flex  justify-end px-4 md:px-6">
+    <h1 class="text-xl md:text-2xl lg:text-3xl pb-3 font-bold  text-white self-end">
+        EVENT MONITORING SYSTEM - CREATE
+    </h1>
+</div>
+<div class="p-4 md:p-6 lg:p-8">
+            <div class="p-5  overflow-x-auto shadow-md rounded-lg bg-white">
+                <form action="" class="w-full" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{event.id}}">
+                    <fieldset for="event_name">
+                        <legend id="event_name">Event Name <span class="text-red-500 poppins-bold">*</span></legend>
+                        <input type="text" name="event_name" class="input w-full" value="{{event.event_name}}" placeholder="E.g. Executive Meeting">
+                       {% for m in messages %}
+                                {% if 'event name' in m.message|lower %}
+                                    <label class="label py-0">
+                                        <span class="label-text-alt text-sm text-red-500">{{ m }}</span>
+                                    </label>
+                                {% endif %}
+                            {% endfor %}
+                    </fieldset>
+                    <div class="flex gap-3">
+                        <fieldset for="date" class="mt-2 w-100">
+                        <label id="date">From <span class="text-red-500 poppins-bold">*</span></label>
+                            
+                        <input type="datetime-local" name="from_date" class="input" value="{{ event.from_date|date:'Y-m-d\TH:i' }}">
+                        {% for m in messages %}
+                                {% if 'from date' in m.message|lower %}
+                                    <label class="label py-0">
+                                        <span class="label-text-alt text-sm text-red-500">{{ m }}</span>
+                                    </label>
+                                {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                    <fieldset for="date" class="mt-2 w-100 flex flex-col">
+                        <label id="date">To <span class="text-red-500 poppins-bold">*</span></label>
+                        <input type="datetime-local" name="to_date" class="input" value="{{ event.to_date|date:'Y-m-d\TH:i' }}">
+                        {% for m in messages %}
+                                {% if 'to date' in m.message|lower %}
+                                    <label class="label py-0">
+                                        <span class="label-text-alt text-sm text-red-500">{{ m }}</span>
+                                    </label>
+                                {% endif %}
+                        {% endfor %}
+                    </fieldset>
+               
+                    <fieldset class="mt-2 w-100">
+                        <legend>Status <span class="text-red-500 poppins-bold">*</span></legend>
+                        <select name="status" class="input" id="">
+                            <option value=""selected disabled>Select Status</option>
+                            <option {% if event.status == 'ongoing' %}
+                                selected
+                            {% endif %} value="ongoing" class="text-cyan-500 font-bold">Ongoing</option>
+                            <option {% if event.status == 'pending' %}
+                                selected
+                            {% endif %} value="pending" class="text-amber-500 font-bold">Pending</option>
+                            <option {% if event.status == 'done' %}
+                                selected
+                            {% endif %} value="done" class="text-green-500 font-bold">Done</option>
+                            <option 
+                            {% if event.status == 'cancelled' %}
+                                selected
+                            {% endif %} value="cancelled" class="text-red-500 font-bold">Cancelled</option>
+                        </select>
+                        {% for m in messages %}
+                                {% if 'status' in m.message|lower %}
+                                    <label class="label py-0">
+                                        <span class="label-text-alt text-sm text-red-500">{{ m }}</span>
+                                    </label>
+                                {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                    </div>
+                    <div class="flex gap-3">
+                    <fieldset class="mt-2 w-full">
+                        <legend>Event Coordinator <span class="text-red-500 poppins-bold">*</span></legend>
+                        <input type="text" name="coordinator" class="input w-full" value="{{event.coordinator}}" placeholder="John Jester Salen (Department)">
+                        {% for m in messages %}
+                                {% if 'coordinator' in m.message|lower %}
+                                    <label class="label py-0">
+                                        <span class="label-text-alt text-sm text-red-500">{{ m }}</span>
+                                    </label>
+                                {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                    <fieldset class="mt-2 w-full">
+                        <legend>Venue<span class="text-red-500 poppins-bold">*</span></legend>
+                        <select name="venue" class="input w-full" id="">
+                            <option value=""selected disabled>Select Venue</option>
+                            
+                            {% for venue in venues %}
+                                <option value="{{venue.id}}" 
+                                {% if event.venue_id == venue.id %}
+                                    selected
+                                {% endif %}
+                                    >{{venue.venue}}</option>
+                            {% endfor %}
+                                
+                        </select>
+                        {% for m in messages %}
+                                {% if 'venue' in m.message|lower %}
+                                    <label class="label py-0">
+                                        <span class="label-text-alt text-sm text-red-500">{{ m }}</span>
+                                    </label>
+                                {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                </div>
+                    <fieldset class="mt-2">
+                        <legend>Remarks</legend>
+                        <textarea name="remarks" id="" class="input w-full h-50 p-3" placeholder="E.g Rent 100 chairs etc (Optional)" >{{event.remarks}}</textarea>
+                    </fieldset>
+                    <div class="flex justify-end items-center">
+                        <button class="btn btn-warning mt-4"><i class="fas fa-save"></i> Update</button>
+                    </div>
+                </form>
+            </div>
+           
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar -->
+    {% include 'sidebar.html' %}
+</div>
+{% endblock %}
+x

@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  LGU Admin Event - Bayan ng Labo
+{% endblock %}
+
+{% block main %}
+  <div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex flex-col">
+      {% include 'navbar.html' %}
+
+      <main class="flex-1">
+        <!-- Header -->
+        <div class="bg-green-500 h-16 flex items-end justify-end px-4 md:px-6">
+          <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-white pb-3"><a href="{% url 'event_calendar' %}" target="_blank">EVENT MONITORING SYSTEM</a></h1>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+          <div class="px-4 md:px-6 mt-6">
+            {% for message in messages %}
+              <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %} shadow-lg mb-3">
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Content -->
+        <div class="p-4 md:p-6 lg:p-8">
+          <div class="bg-white lg:p-10 p-2  shadow-md rounded-lg overflow-hidden">
+            <!-- Add Button -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center flex-wrap gap-3">
+              <h2 class="text-lg font-semibold text-gray-800">Events List</h2>
+              <a href="{% url 'create_event' %}" class="btn btn-info btn-sm md:btn-md">
+                <i class="fas fa-plus"></i> <span class="hidden sm:inline">Add Event</span>
+              </a>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto">
+              <table id="eventtable" class="table table-zebra w-full min-w-full">
+                <thead class="bg-gray-200 text-xs md:text-sm">
+                  <tr>
+                    <th class="text-left">No</th>
+                    <th class="text-left">Date</th>
+                    <th class="text-left">Title</th>
+                    <th class="text-left hidden lg:table-cell">Venue</th>
+                    <th class="text-left hidden md:table-cell">Coordinator</th>
+                    <th class="text-left">Status</th>
+                    <th class="text-left hidden xl:table-cell">Remarks</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs md:text-sm">
+                  {% for event in events %}
+                    <tr class="hover">
+                      <td>{{ forloop.counter }}</td>
+                      <td class="text-center whitespace-nowrap">
+                        <div class="text-xs">
+                          {{ event.from_date|date:'M d, Y' }}<br>
+                          <span class="text-gray-500">{{ event.from_date|time:'H:i' }}</span>
+                        </div>
+                        <small class="text-gray-500">to</small>
+                        <div class="text-xs">
+                          {{ event.to_date|date:'M d, Y' }}<br>
+                          <span class="text-gray-500">{{ event.to_date|time:'H:i' }}</span>
+                        </div>
+                      </td>
+                      <td class="max-w-xs">
+                        <div class="truncate font-medium" title="{{ event.event_name }}">
+                          {{ event.event_name|truncatechars:30 }}
+                        </div>
+                      </td>
+                      <td class="hidden lg:table-cell">
+                        {% if event.venue %}
+                          <span class="truncate block max-w-32" title="{{ event.venue.venue }}">
+                            {{ event.venue.venue|truncatechars:25 }}
+                          </span>
+                        {% else %}
+                          <span class="text-gray-400">—</span>
+                        {% endif %}
+                      </td>
+                      <td class="hidden md:table-cell">
+                        {{ event.coordinator|default:'—'|truncatechars:20 }}
+                      </td>
+                      <td>
+                        <span class="badge badge-sm
+                          {% if event.status == 'ongoing' %}badge-warning
+                          {% elif event.status == 'pending' %}badge-info
+                          {% elif event.status == 'done' %}badge-success
+                          {% elif event.status == 'cancelled' %}badge-error
+                          {% endif %}">
+                          {{ event.status|title }}
+                        </span>
+                      </td>
+                      <td class="hidden xl:table-cell">
+                        {{ event.remarks|default:'—'|truncatechars:30 }}
+                      </td>
+                      <td>
+                        <div class="flex justify-center gap-2 text-base">
+                          <!-- View -->
+                          <a href="{% url 'show_event' event.id %}" class="text-blue-500 hover:text-blue-700" title="View">
+                            <i class="fas fa-eye"></i>
+                          </a>
+                          <!-- Edit -->
+                          <a href="{% url 'edit_event' event.id %}" class="text-yellow-500 hover:text-yellow-700" title="Edit">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <!-- Delete Modal Trigger -->
+                          <label for="delete-modal-{{ event.id }}"
+                                 class="text-red-500 hover:text-red-700 cursor-pointer" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </label>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- DELETE MODAL -->
+                    <input type="checkbox" id="delete-modal-{{ event.id }}" class="modal-toggle" />
+                    <div class="modal modal-bottom sm:modal-middle">
+                      <div class="modal-box">
+                        <h3 class="font-bold text-lg">Confirm Delete</h3>
+                        <p class="py-4">
+                          Delete event: <strong>{{ event.event_name|truncatechars:40 }}</strong>?
+                        </p>
+                        <div class="modal-action flex flex-col sm:flex-row gap-2">
+                          <label for="delete-modal-{{ event.id }}" class="btn btn-ghost flex-1">Cancel</label>
+                          <form action="{% url 'destroy_event' %}" method="post" class="flex-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ event.id }}" />
+                            <button type="submit" class="btn btn-error w-full">Delete</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Card Fallback (Optional, if DataTables fails) -->
+            <div class="block lg:hidden p-4 space-y-4" id="mobile-events" style="display: none;">
+              {% for event in events %}
+                <div class="card bg-base-100 shadow-sm border">
+                  <div class="card-body p-4 text-sm">
+                    <div class="flex justify-between items-start">
+                      <h3 class="font-semibold">{{ event.event_name|truncatechars:35 }}</h3>
+                      <span class="badge badge-sm {% if event.status == 'ongoing' %}badge-warning{% elif event.status == 'pending' %}badge-info{% elif event.status == 'done' %}badge-success{% elif event.status == 'cancelled' %}badge-error{% endif %}">
+                        {{ event.status|title }}
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-600 space-y-1 mt-2">
+                      <p><strong>Date:</strong> {{ event.from_date|date:'M d, Y H:i' }} – {{ event.to_date|date:'M d, Y H:i' }}</p>
+                      <p class="lg:hidden"><strong>Venue:</strong> {{ event.venue.venue|default:'—'|truncatechars:30 }}</p>
+                      <p class="md:hidden"><strong>Coordinator:</strong> {{ event.coordinator|default:'—' }}</p>
+                    </div>
+                    <div class="card-actions justify-end mt-3 gap-2">
+                      <a href="{% url 'show_event' event.id %}" class="btn btn-xs btn-info">View</a>
+                      <a href="{% url 'edit_event' event.id %}" class="btn btn-xs btn-warning">Edit</a>
+                      <label for="delete-modal-{{ event.id }}" class="btn btn-xs btn-error">Delete</label>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    {% include 'sidebar.html' %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      const table = $('#eventtable').DataTable({
+        responsive: true,
+        paging: true,
+        searching: true,
+        info: true,
+        ordering: true,
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        columnDefs: [
+          { responsivePriority: 1, targets: 0 },   // No
+          { responsivePriority: 2, targets: -1 },  // Action
+          { responsivePriority: 3, targets: 2 },   // Title
+          { responsivePriority: 4, targets: 1 },   // Date
+          { responsivePriority: 5, targets: 5 },   // Status
+          { responsivePriority: 10001, targets: [3,4,6] } // Hide first on mobile
+        ],
+        language: {
+          search: "Search events:",
+          lengthMenu: "Show _MENU_ entries",
+          info: "Showing _START_ to _END_ of _TOTAL_ events",
+          paginate: {
+            first: "First",
+            last: "Last",
+            next: "Next",
+            previous: "Previous"
+          }
+        }
+      });
+
+      // Optional: Show mobile cards if table collapses too much
+      // You can remove this if DataTables responsive works well
+      function checkMobile() {
+        if (window.innerWidth < 1024 && table.responsive.hasHidden()) {
+          $('#eventtable').hide();
+          $('#mobile-events').show();
+        } else {
+          $('#eventtable').show();
+          $('#mobile-events').hide();
+        }
+      }
+
+      $(window).on('resize', checkMobile);
+      table.on('responsive-display', checkMobile);
+      checkMobile();
+    });
+  </script>
+{% endblock %}
