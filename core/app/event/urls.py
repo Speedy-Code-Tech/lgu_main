@@ -10,6 +10,6 @@ urlpatterns = [
 ]
 
 urlpatterns+=[
-  path('calendar/', views.calendar, name='event_calendar'),     # ← NEW
+  path('', views.calendar, name='event_calendar'),     # ← NEW
     path('api/events/', views.event_api, name='event_api'),
 ]

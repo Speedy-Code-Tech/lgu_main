@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applicant Form</title>
+    {% load static %} <link rel="stylesheet" href={% static 'css/main.css' %}/>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <div class="container-fluid px-0 pt-0 pb-3 m-0">
+      <header class="mb-4 p-0 container-fluid m-0">
+        <img
+          src="{% static 'applicant/images/ea.png' %}"
+          alt="Logo"
+          class="p-0 mb-3 w-100"
+        />
+      </header>
+      <article>
+        <div class="d-flex flex-column px-5 pb-3">
+          <h3 class="fw-bold p-0 m-0">Qualification/s</h3>
+          <div
+            class="line"
+            style="
+              width: 100px;
+              height: 4px;
+              radius: 40px;
+              background-color: #014633;
+            "
+          ></div>
+          <br />
+          <ol class="ps-5 d-flex flex-column gap-3">
+            <li>
+              Parents must be a resident and or registered voter of this
+              municipality. (Labo)
+            </li>
+            <li>
+              For High School students must be enrolled in any institution here
+              in Labo, Camarines Norte while for College Students must be
+              enrolled or will enroll in any institution within the province of
+              Camarines Norte
+            </li>
+            <li>With Good Moral Character</li>
+            <li>
+              Must be a member of Indigent Family but not a beneficiary of 4Ps
+            </li>
+            <li>With at least 80 GWA.</li>
+          </ol>
+          <br />
+          <h3 class="fw-bold p-0 m-0">Requirements</h3>
+          <div
+            class="line"
+            style="
+              width: 100px;
+              height: 4px;
+              radius: 40px;
+              background-color: #014633;
+            "
+          ></div>
+          <ol class="ps-5 d-flex flex-column gap-3 pt-4">
+            <li>
+              COG or Photocopy of the Report Card (<span
+                class="fw-bold fst-italic"
+                >Last School Attended</span
+              >)
+            </li>
+            <li>
+              Barangay Residency (<span class="fw-bold fst-italic"
+                >Respective Barangay</span
+              >)
+            </li>
+            <li>
+              Photocopy of Parent/Guardian’s Income Tax Return (<span
+                class="fw-bold fst-italic"
+                >BIR Talisay</span
+              >)
+            </li>
+            <li>
+              Certificate of Good Moral character (<span
+                class="fw-bold fst-italic"
+                >School Last Attended</span
+              >)
+            </li>
+            <li>
+              Affidavit of Non-4ps Beneficiary (<span class="fw-bold fst-italic"
+                >Human Resource Management Office, Municipal Building</span
+              >)
+            </li>
+          </ol>
+          <div
+            class="container-fluid py-5 d-flex flex-column justify-content-center align-items-center"
+          >
+            <h3 class="fw-bold p-0 m-0">
+              HIGH SCHOOL STUDENTS ARE ELIGIBLE ONE PER SCHOOL YEAR
+            </h3>
+            <div
+              class="line bg-danger mt-2"
+              style="width: 50%; height: 4px; radius: 40px"
+            ></div>
+          </div>
+        </div>
+      </article>
+      {% if display == 'open' %}
+        <header
+          class="mb-4 p-5 container-fluid m-0"
+          style="
+            width: 100%;
+            height: auto;
+            background: url({%static 'applicant/images/header.png' %}) no-repeat center
+              center;
+            background-size: cover;
+            display: flex;
+            flex-direction:column;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+        <h2 style="color: #333; margin: 0;" class="font text-white pt-2"> Fill Up the Applicant Information</h2>
+        <p class="text-end text-white" style="position:absolute; right: 20px; margin-top:110px;">Current Applicant: <span class="fw-bold">{{count}}</span></p>
+        </header>
+           <article class="container">
+          {% if errors.datas %}
+            <div class="alert alert-danger">{{ errors.datas }}</div>
+          {% endif %}
+
+          <form action="" method="post">
+            {% csrf_token %}
+
+            <!-- NAME ROW -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <label class="form-label"
+                  >First Name <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control {% if errors.fName %}is-invalid{% endif %}"
+                  name="fname"
+                  value="{{ fName|default_if_none:'' }}"
+                  placeholder="John"
+                />
+                {% if errors.fName %}
+                <div class="invalid-feedback d-block">{{ errors.fName }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Middle Name</label>
+                <input
+                  type="text"
+                  class="form-control {% if errors.mName %}is-invalid{% endif %}"
+                  name="mname"
+                  value="{{ mName|default_if_none:'' }}"
+                  placeholder="Name"
+                />
+                {% if errors.mName %}
+                <div class="invalid-feedback d-block">{{ errors.mName }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label"
+                  >Last Name <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control {% if errors.lName %}is-invalid{% endif %}"
+                  name="lname"
+                  value="{{ lName|default_if_none:'' }}"
+                  placeholder="Doe"
+                />
+                {% if errors.lName %}
+                <div class="invalid-feedback d-block">{{ errors.lName }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- EMAIL & CONTACT ROW -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Email <span class="text-danger">*</span></label
+                >
+                <input
+                  type="email"
+                  class="form-control {% if errors.email %}is-invalid{% endif %}"
+                  name="email"
+                  value="{{ email|default_if_none:'' }}"
+                  placeholder="johndoe@gmail.com"
+                />
+                {% if errors.email %}
+                <div class="invalid-feedback d-block">{{ errors.email }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Contact No. <span class="text-danger">*</span></label
+                >
+                <input
+                  type="tel"
+                  class="form-control {% if errors.contact %}is-invalid{% endif %}"
+                  name="contact"
+                  value="{{ contact|default_if_none:'' }}"
+                  placeholder="09xxxxxxxxx"
+                />
+                {% if errors.contact %}
+                <div class="invalid-feedback d-block">{{ errors.contact }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- GRADE & SCHOOL ROW -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Year/Grade <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control {% if errors.grade %}is-invalid{% endif %}"
+                  name="grade"
+                  value="{{ grade|default_if_none:'' }}"
+                  placeholder="Grade 8, Grade 12-STEM, 1st Year BSCS"
+                />
+                {% if errors.grade %}
+                <div class="invalid-feedback d-block">{{ errors.grade }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"
+                  >School <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control {% if errors.school %}is-invalid{% endif %}"
+                  name="school"
+                  value="{{ school|default_if_none:'' }}"
+                  placeholder="School Name"
+                />
+                {% if errors.school %}
+                <div class="invalid-feedback d-block">{{ errors.school }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="mb-4">
+              <label class="form-label"
+                >Address <span class="text-danger">*</span></label
+              >
+              <textarea
+                class="form-control {% if errors.address %}is-invalid{% endif %}"
+                name="address"
+                rows="3"
+              >
+          {{ address|default_if_none:'' }}</textarea
+              >
+              {% if errors.address %}
+              <div class="invalid-feedback d-block">{{ errors.address }}</div>
+              {% endif %}
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-success btn-lg px-5">
+                SUBMIT APPLICATION
+              </button>
+            </div>
+          </form>
+        </article>
+      {% endif %} 
+      {% if display == 'full' %}
+        <header
+          class=" p-0 container-fluid m-0"
+          style="
+            width: 100%;
+            height: 100vh;
+            background: url({%static 'applicant/images/bg.png' %}) no-repeat center
+              center;
+            background-size: cover;
+            display: flex;
+            flex-direction:column;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <h3 style="padding-top:120px;" class="font text-white text-center mt-4">We cannot accept more applications right now.</h3>
+        <h2 style="color: #333; margin: 0;" class="font text-white pt-5 text-center mt-2"> Maximum {{count}} Applications Reached</h2>
+
+        </header>
+      {% endif %} 
+      {% if display == 'closed' %}
+        <header class="p-0 container-fluid m-0">
+          <img
+            src="{% static 'applicant/images/close.png' %}"
+            alt="Logo"
+            class="p-0 mb-3 img-fluid"
+          />
+        </header>
+      {% endif %}
+      
+      
+    </div>
+    <div class="container-fluid m-0 border py-3 border border-secondary border-start-0 border-end-0 border-bottom-0 d-flex align-items-center justify-content-center">
+      <p class="text-secondary p-0 m-0 text-center">© 2025  Municipal of Labo - All Rights Reserved.</p>
+    </div>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AUTO-SHOW SUCCESS MODAL -->
+   {% if success %}
+<div style="display: none;">
+    <span id="successMessage">Congratulations {{ full_name }}! Application submitted successfully!</span>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const successMsg = document.getElementById('successMessage').textContent;
+    Swal.fire({
+        icon: "success",
+        title: " Application Submitted!",
+        html: `
+            <div class="text-center">
+                <h4>Congratulations <strong>${'{{ full_name }}'}</strong>!</h4>
+                <p class="mb-3">Application submitted successfully!</p>
+            </div>
+        `,
+        confirmButtonText: "Close",
+        confirmButtonColor: "#28a745",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        customClass: {
+            popup: 'text-dark'
+        }
+    }).then((result) => {
+        // Auto-clear form for next submission
+        document.querySelector('form').reset();
+        window.location.reload();
+    });
+});
+</script>
+{% endif %}
+
+ {% if errors.datas %}
+    <div style="display: none;">
+    <span class="errorMessage">{{ errors.datas }}</span>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const errorMsg = document.querySelector('.errorMessage').textContent;
+    Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: errorMsg,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#d33",
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    });
+});
+</script>
+  {% endif %}
+
+  </body>
+</html>

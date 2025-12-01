@@ -5,15 +5,19 @@ Fixed & optimized for Windows + Tailwind + Hot Reload (Nov 2025)
 
 from pathlib import Path
 import os
-
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = 'django-insecure-7iue1t1p937up2%dn_l*=o)z8@e49ntb3-r!%f*+a&m8944091'
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
-
+ALLOWED_HOSTS = ['localhost','labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
+CSRF_TRUSTED_ORIGINS = [
+    'https://labocamnorte.site',
+    'http://labocamnorte.site',
+    'https://www.labocamnorte.site',
+    'http://www.labocamnorte.site',
+]
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,17 +32,21 @@ INSTALLED_APPS = [
     'app.user_auth',                
     'app.event',
     'app.education_assistance',
+    'app.monitoring_api',
     # TAILWIND + HOT RELOAD
     'tailwind',
     'theme',                           
-    'django_browser_reload',           
+    'django_browser_reload',  
+    # OTHERS UTILS
+    'rest_framework', 
+    'corsheaders',        
 ]
 
-
+CORS_ALLOW_ALL_ORIGINS = True
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 # Tailwind config
 TAILWIND_APP_NAME = 'theme'
-INTERNAL_IPS = ['127.0.0.1','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
+INTERNAL_IPS = ['127.0.0.1','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
 
 # Middleware
 MIDDLEWARE = [
@@ -82,9 +90,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'lgu_main_system',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'P@55word',
         'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PORT': '3306', 
     }
 }
 
@@ -102,13 +110,17 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']          # ← Fixed syntax
-STATIC_ROOT = BASE_DIR / 'staticfiles'           # For collectstatic later
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Media (if you upload files)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# IMPORTANT: tell Django it is running under /lgu/
+FORCE_SCRIPT_NAME = '/lgu'
+USE_X_FORWARDED_HOST = True
+
+# Static & Media
+STATIC_URL = '/lgu/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/lgu/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
