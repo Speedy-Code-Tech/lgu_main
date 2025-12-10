@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # YOUR APP (fixed name!)
     'app.main',
@@ -33,6 +34,8 @@ INSTALLED_APPS = [
     'app.event',
     'app.education_assistance',
     'app.monitoring_api',
+    'app.gso.procurement',
+    'app.employee',
     # TAILWIND + HOT RELOAD
     'tailwind',
     'theme',                           
@@ -119,6 +122,7 @@ USE_X_FORWARDED_HOST = True
 # Static & Media
 STATIC_URL = '/lgu/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 MEDIA_URL = '/lgu/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -4,8 +4,9 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.db import transaction
 from .models import Applicants, DataEntryPeriod,Limit
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
+@login_required
 def view(request):
     applicant = Applicants.objects.all()      
     return render(request,'view_admin.html',{"active":'education',"applicants":applicant})

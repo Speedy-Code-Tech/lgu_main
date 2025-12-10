@@ -23,7 +23,9 @@ urlpatterns = [
     path('',include('app.main.urls')),
     path('accounts/',include('app.user_auth.urls')),
     path('event/',include('app.event.urls')),
+    path('employee/',include('app.employee.urls')),
     path('education/',include('app.education_assistance.urls')),
+    path('gso/procurement/',include('app.gso.procurement.urls')),
 ]
 
 
@@ -35,6 +37,7 @@ urlpatterns += [
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     # Include django_browser_reload URLs only in DEBUG mode
     urlpatterns += [
         path("__reload__/", include("django_browser_reload.urls")),

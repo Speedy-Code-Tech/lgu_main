@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}LGU Admin - Procurement Tracker{% endblock %}
+
+{% block main %}
+<div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+  <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+  <div class="drawer-content flex flex-col">
+    {% include 'navbar.html' %}
+
+    <main class="flex-1">
+      <!-- Header -->
+      <div class="bg-green-600 h-16 flex items-end justify-between px-4 md:px-6">
+        <h1 class="text-xl md:text-3xl font-bold text-white pb-3">
+          <a href="{% url 'event_calendar' %}" target="_blank" class="hover:underline">
+            PROCUREMENT TRACKER
+          </a>
+        </h1>
+      </div>
+
+      <!-- Flash Messages -->
+      {% if messages %}
+        <div class="px-4 md:px-6 mt-6">
+          {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %} shadow-lg mb-3">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Main Content -->
+      <div class="p-4 md:p-6 lg:p-8">
+        <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+          <!-- Header with Add Button -->
+          <div class="p-4 bg-gray-50 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 class="text-2xl font-bold text-gray-800">Procurement List</h2>
+            
+            {% if role == 'admin' %}              
+              <a href="{% url 'gso:procurement_create' %}" class="btn btn-info btn-sm md:btn-md">
+                <i class="fas fa-plus mr-2"></i>
+                <span class="hidden sm:inline">Add Procurement</span>
+                <span class="sm:hidden">Add</span>
+              </a>
+            {% endif %}
+
+          </div>
+
+          <!-- Responsive Table Container -->
+          <div class="overflow-x-auto p-5">
+            <table id="procurement" class="table table-zebra w-full">
+              <thead class="bg-green-500 text-white text-xs md:text-sm">
+                <tr>
+                  <th>No</th>
+                  <th>Responsible Person</th>
+                  <th>Purchase No</th>
+                  <th>Date Purchase</th>
+                  <th>End User</th>
+                  <th>Type of Good</th>
+                  <th>Approved Budget</th>
+                  <th>Mode</th>
+                  <th>Winning Supplier</th>
+                  <th>PO No.</th>
+                  <th>Delivery Date</th>
+                  <th>Status</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="text-xs md:text-base">
+                {% for pr in procurements %}
+                <tr class="{% if pr.date_delivery and pr.date_delivery < today and not pr.date_received %}bg-red-100{% endif %}">
+                  <td>{{ forloop.counter }}</td>
+                  <td class="font-medium">{{ pr.person_responsible.last_name }}, {{ pr.person_responsible.first_name }}</td>
+                  <td class="font-mono">{{ pr.purchase_no|default:"-" }}</td>
+                  <td>{{ pr.date_of_purchase|date:"M d, Y"|default:"-" }}</td>
+                  <td><span class="badge badge-primary badge-sm">{{ pr.end_user.abbreviation }}</span></td>
+                  <td>{{ pr.type_of_good.name }}</td>
+                  <td class="font-semibold text-right">
+                    {% if pr.approved_budget %}
+                      ₱{{ pr.approved_budget|floatformat:2|intcomma }}
+                    {% else %}
+                      <span class="text-red-600">₱0.00</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ pr.mode_of_procurement.name|default:"-" }}</td>
+                  <td>{{ pr.winning_supplier|default:"-" }}</td>
+                  <td class="font-mono">{{ pr.po_number|default:"-" }}</td>
+                  <td>{{ pr.date_delivery|date:"M d, Y"|default:"-" }}</td>
+                  <td>
+                    {% if pr.date_received %}
+                      <span class="badge badge-success">Received</span>
+                    {% elif pr.date_delivery and pr.date_delivery < today %}
+                      <span class="badge badge-error">Delayed</span>
+                    {% else %}
+                      <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <div class="flex justify-center gap-1">
+                      <a href="{% url 'gso:procurement_view' pr.id %}" class="btn btn-ghost btn-xs cursor-pointer" title="View">
+                        <i class="fas fa-eye text-info"></i>
+                      </a>
+                  
+                         {% if role == 'admin' %}          
+                      <a href="{% url 'gso:procurement_edit' pr.id %}" class="btn btn-ghost btn-xs cursor-pointer" title="Edit">
+                        <i class="fas fa-edit text-warning"></i>
+                      </a>
+                      <a data-id ="{{pr.id}}" data-pr ="{{pr.purchase_no}}"  class="cursor-pointer deleteProcurement btn-ghost btn-xs" title="Delete"
+                        >
+                        <i class="fas fa-trash text-error"></i>
+                      </a>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+               
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  {% include 'sidebar.html' %}
+</div>
+<dialog id="deleteProcurementModal" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="text-lg font-bold text-stone-700">Confirm Deletion!</h3>
+    <p class="py-4" id="modalText"></p>
+    <div class="w-full flex justify-center gap-3 items-center">
+      <button class="btn w-1/2 btn-info" id="cancelBtn">Cancel</button>
+      <a id="deleteBtn" class="btn w-1/2 btn-error">Delete</a>
+
+    </div>
+  </div>
+</dialog>
+
+{% endblock main %}
+
+
+{% block scripts %}
+
+<script>
+
+$(document).ready(function() {
+     $("#cancelBtn").on('click',function(event){
+        document.getElementById('deleteProcurementModal').close();
+     })
+  $(".deleteProcurement").on('click',function(event){
+    let id = $(this).data("id")
+    let pr = $(this).data("pr")
+   // Update modal text
+        $("#modalText").html(`
+            Are you sure you want to delete 
+            <span class="font-bold text-red-600">Procurement Item No. ${pr}</span>?
+            <br><br>This action <strong>cannot be undone</strong>.
+        `);
+        
+        // Store ID temporarily (for confirm button)
+        $("#deleteBtn").attr('href', `/gso/procurement/delete/${id}/`);
+        // Show modal
+        document.getElementById('deleteProcurementModal').showModal();
+ 
+})
+    $('#procurement').DataTable({
+        responsive: true,
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100, 200],
+        order: [[3, 'desc']], // Sort by Date Purchase (latest first)
+        dom: '<"flex justify-between items-center mb-4"lf><"overflow-x-auto"t><"flex justify-between items-center mt-4"ip>',
+        buttons: [
+            {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns"></i> Columns',
+                className: 'btn btn-sm btn-outline btn-primary'
+            }
+        ],
+
+        language: {
+            search: "Search records:",
+            searchPlaceholder: "Type to search...",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ procurements",
+            paginate: {
+                previous: "Previous",
+                next: "Next"
+            }
+        },
+
+        // Optional: Make search box look nicer
+        initComplete: function () {
+            // Style the search box
+            $('.dataTables_filter input').addClass('input input-bordered input-sm w-full max-w-xs');
+            $('.dataTables_filter label').addClass('font-medium text-gray-700');
+
+            // Style length menu
+            $('.dataTables_length select').addClass('select select-bordered select-sm');
+        }
+    });
+
+    // Auto-hide success/error messages
+    setTimeout(function() {
+        $('.alert').fadeOut(1000);
+    }, 4000);
+});
+</script>
+
+{% endblock scripts %}

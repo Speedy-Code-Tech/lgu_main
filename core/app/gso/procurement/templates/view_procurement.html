@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}View Procurement - {{pr.purchase_no}} - Bayan ng Labo{% endblock %}
+
+{% block main %}
+<div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+  <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+  <div class="drawer-content flex flex-col">
+    {% include 'navbar.html' %}
+
+    <main class="flex-1">
+      <!-- Header -->
+      <div class="bg-green-500 h-16 flex items-end justify-end px-4 md:px-6">
+        <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-white pb-3">
+          <a href="{% url 'event_calendar' %}" target="_blank" class="hover:underline">PROCUREMENT TRACKER</a>
+        </h1>
+      </div>
+
+
+
+
+      <div class="p-6 lg:p-8">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div class="bg-gradient-to-r from-green-600 to-green-700 p-8 text-center">
+            <h2 class="text-4xl font-bold text-white">View Procurement Record No. {{pr.purchase_no}}</h2>
+          </div>
+
+          <div  class="p-8 lg:p-12 space-y-10">
+        
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+              <!-- Person Responsible -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Person Responsible <span class="text-red-500">*</span></span></label>
+               <input type="text" readonly class="input" value="{{ pr.person_responsible.last_name }}, {{ pr.person_responsible.first_name }}">
+                </select>
+             
+              </div>
+
+              <!-- Purchase No -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Purchase No <span class="text-red-500">*</span></span></label>
+                <input type="text" readonly name="purchase_no" value="{{ pr.purchase_no|default:'' }}"
+                       class="input input-bordered w-full " aria-readonly="" />
+              
+              </div>
+
+              <!-- Date of Purchase -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date of Purchase</span></label>
+                <input type="text" readonly name="date_purchase" value="{{ pr.date_of_purchase|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_of_purchase %}input-error{% endif %}" />
+              
+              </div>
+
+              <!-- End User (Department) -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">End User <span class="text-red-500">*</span></span></label>
+                <input readonly type="text" value="{{ pr.end_user.abbreviation }} - {{ pr.end_user.name }}" class="input">
+              </div>
+
+              <!-- Type of Good -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Type of Good <span class="text-red-500">*</span></span></label>
+                <input type="text" readonly class="input" value="{{pr.type_of_good.name}}">
+              </div>
+
+              <!-- Approved Budget -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Approved Budget</span></label>
+                <input readonly type="text" id="budgetInput" step="0.01" name="approved_budget" value="Php {{ pr.approved_budget|floatformat:2 }}"
+                       class="input input-bordered w-full {% if error.approved_budget %}input-error{% endif %}" />
+                {% if error.approved_budget %}
+                  <label class="label"><span class="label-text-alt text-error font-medium">{{ error.approved_budget.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Charging -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Charging</span></label>
+                <input readonly type="text" name="charging" value="{{ pr.charging|default:'' }}"
+                       class="input input-bordered w-full {% if error.charging %}input-error{% endif %}" />
+        
+              </div>
+
+              <!-- Mode of Procurement -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Mode of Procurement <span class="text-red-500">*</span></span></label>
+                <input type="text" readonly value="{{pr.mode_of_procurement.name}}" class="input">
+              </div>
+
+              <!-- Min of Meeting -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Min of Meeting</span></label>
+                <input type="text" readonly name="min_of_meeting" value="{{ pr.min_of_meeting|default:'' }}"
+                       class="input input-bordered w-full {% if error.min_of_meeting %}input-error{% endif %}" />
+            
+              </div>
+
+              <!-- BAC Resolution -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">BAC Resolution</span></label>
+                <input type="text" readonly name="bac_resolution" value="{{ pr.bac_resolution|default:'' }}"
+                       class="input input-bordered w-full {% if error.bac_resolution %}input-error{% endif %}" />
+          
+              </div>
+
+              <!-- Proof of Service -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Proof of Service</span></label>
+                <input type="text" readonly name="proof_of_service" value="{{ pr.proof_of_service|default:'' }}"
+                       class="input input-bordered w-full {% if error.proof_of_service %}input-error{% endif %}" />
+             
+              </div>
+
+              <!-- RFQ's -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">RFQ's</span></label>
+                <input readonly type="text" name="rfqs" value="{{ pr.rfqs|default:'' }}"
+                       class="input input-bordered w-full {% if error.rfqs %}input-error{% endif %}" />
+         
+              </div>
+
+              <!-- Winning Supplier -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Winning Supplier</span></label>
+                <input readonly type="text" name="winning_supplier" value="{{ pr.winning_supplier|default:'' }}"
+                       class="input input-bordered w-full {% if error.winning_supplier %}input-error{% endif %}" />
+            
+              </div>
+
+              <!-- Recommending the Award -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Recommending the Award</span></label>
+                <input type="text" readonly name="recommending_award" value="{{ pr.recommending_award|default:'' }}"
+                       class="input input-bordered w-full {% if error.recommending_award %}input-error{% endif %}" />
+              </div>
+
+              <!-- PhilGEPS -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">PhilGEPS</span></label>
+                <input type="text" readonly name="philgeps" value="{{ pr.philgeps|default:'' }}"
+                       class="input input-bordered w-full {% if error.philgeps %}input-error{% endif %}" />
+               
+              </div>
+
+              <!-- Purchase Order No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Purchase Order No.</span></label>
+                <input type="text" readonly name="po_number" value="{{ pr.po_number|default:'' }}"
+                       class="input input-bordered w-full {% if error.po_number %}input-error{% endif %}" />
+            
+              </div>
+
+              <!-- Posting of Award -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Posting of Award</span></label>
+                <input type="text" readonly name="posting_of_award" value="{{ pr.posting_of_award|default:'' }}"
+                       class="input input-bordered w-full {% if error.posting_of_award %}input-error{% endif %}" />
+        
+              </div>
+
+              <!-- PhilGEPS Reg No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">PhilGEPS Reg No.</span></label>
+                <input type="text" readonly name="philgeps_reg_no" value="{{ pr.philgeps_reg_no|default:'' }}"
+                       class="input input-bordered w-full {% if error.philgeps_reg_no %}input-error{% endif %}" />
+           
+              </div>
+
+              <!-- Mayor's No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Mayor's No.</span></label>
+                <input type="text" readonly name="mayors_no" value="{{ pr.mayors_no|default:'' }}"
+                       class="input input-bordered w-full {% if error.mayors_no %}input-error{% endif %}" />
+                
+              </div>
+
+              <!-- Date of Delivery -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date of Delivery</span></label>
+                <input type="text" readonly name="date_delivery" value="{{ pr.date_delivery|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_delivery %}input-error{% endif %}" />
+         
+              </div>
+
+              <!-- Date Received -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date Received</span></label>
+                <input type="text" readonly name="date_received" value="{{ pr.date_received|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_received %}input-error{% endif %}" />
+               
+              </div>
+
+              <!-- Check No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Check No.</span></label>
+                <input type="text" readonly name="check_no" value="{{ pr.checks|default:'' }}"
+                       class="input input-bordered w-full {% if error.check_no %}input-error{% endif %}" />
+         
+              </div>
+
+              <!-- Date of Check -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date of Check</span></label>
+                <input type="text" readonly name="date_check" value="{{ pr.date_check|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_check %}input-error{% endif %}" />
+           
+              </div>
+
+              <!-- Remarks (Full Width) -->
+              <div class="form-control col-span-full">
+                <label class="label"><span class="label-text font-bold">Remarks</span></label>
+                <textarea name="remarks" readonly rows="5" class="textarea textarea-bordered w-full {% if error.remarks %}textarea-error{% endif %}">
+{{ pr.remarks|default:'' }}</textarea>
+                
+              </div>
+
+            </div>
+
+        
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  {% include 'sidebar.html' %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('budgetInput');
+    
+    // Format on page load
+    formatNumber(input);
+    
+    // Format while typing
+    input.addEventListener('input', function(e) {
+        formatNumber(e.target);
+    });
+    
+    // Clean value before form submit (very important!)
+    input.closest('form')?.addEventListener('submit', function() {
+        input.value = input.value.replace(/,/g, '');
+    });
+
+    function formatNumber(el) {
+        let value = el.value.replace(/,/g, '').trim();
+        
+        // Allow only numbers and decimal
+        value = value.replace(/[^0-9.]/g, '');
+        
+        // Prevent multiple decimals
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        // Limit to 2 decimal places
+        if (parts[1]) {
+            parts[1] = parts[1].substring(0, 2);
+            value = parts[0] + '.' + parts[1];
+        }
+        
+        // Convert to number and format with commas
+        if (value && !isNaN(value)) {
+            const num = parseFloat(value);
+            if (!isNaN(num)) {
+                const [integer, decimal] = num.toFixed(2).split('.');
+                el.value = "Php "+integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + 
+                          (decimal ? '.' + decimal : '.00');
+            }
+        } else if (value === '' || value === '.') {
+            el.value = '';
+        }
+    }
+});
+</script>
+{% endblock scripts %}

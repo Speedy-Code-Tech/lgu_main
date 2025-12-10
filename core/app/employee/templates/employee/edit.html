@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  LGU Admin Employee - Bayan ng Labo
+{% endblock %}
+
+{% block main %}
+  <div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input value="{{ request.POST.first_name|default:'' }}" id="sidebar" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex flex-col">
+      {% include 'navbar.html' %}
+
+      <main class="flex-1">
+        <!-- Header -->
+        <div class="bg-green-500 h-16 flex items-end justify-end px-4 md:px-6">
+          <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-white pb-3">LGU - EMPLOYEE LIST</h1>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+          <div class="px-4 md:px-6 mt-6">
+            {% for message in messages %}
+              <div class="alert {% if message.tags == 'error' %}
+                  
+                  
+                  alert-error
+
+
+                {% else %}
+                  
+                  
+                  alert-success
+
+
+                {% endif %} shadow-lg mb-3">
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Content -->
+        <div class="p-4 md:p-6 lg:p-8">
+          <div class="bg-white lg:p-10 p-2 shadow-md rounded-lg">
+            <!-- Add Button -->
+            <div class="p-4 border-b w-full border-gray-200 flex justify-center items-center flex-wrap gap-3">
+              <h2 class="text-3xl text-end font-semibold text-gray-800">Edit Employee</h2>
+            </div>
+            <form action="" id="employeeForm" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <h2 class="text-2xl py-3 font-semibold text-green-500">Personal Information</h2>
+              <div class="flex w-full flex-col sm:flex-row">
+                <div class="w-full sm:w-[25%] flex justify-center">
+
+                  <div id="profile-preview" class="w-[250px] flex flex-col justify-center items-center">
+  <!-- Preview Image (starts with default photo) -->
+  <img src="{% if employee.profile_picture %}{{ employee.profile_picture.url }}{% else %}{% static 'employee/images/profile.jpg' %}{% endif %}" 
+       id="preview-img"
+       class="w-[230px] h-[230px] object-cover border-4 border-gray-300 shadow-lg transition-all"
+       alt="Profile Preview">
+
+  <!-- File Input (NEVER gets replaced!) -->
+  <div class="mt-4 text-center">
+    <input type="file" 
+           name="profile" 
+           id="profiles" 
+           accept="image/*"
+           class="file-input file-input-success w-full max-w-xs" />
+    <p class="text-sm text-gray-600 mt-2">Click to change photo</p>
+  </div>
+</div>
+                </div>
+                <div class="w-full sm:w-[75%]  p-3">
+                  {% comment %}FIRSTNAME MIDDLENAME EXTNAME{% endcomment %}
+                    <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                      <fieldset class="w-full fieldset">
+                        <legend class="fieldset-legend pb-0 text-lg">First Name</legend>
+                        <input value="{{ request.POST.first_name|default:employee.first_name }}" name="first_name" class="input w-full {% if error.first_name.msg %} input-error {% endif %}" placeholder="John Jester" />
+                        <span class="font-semibold text-error">{{error.first_name.msg}}</span>
+                      </fieldset>
+                      <fieldset class="w-full fieldset">
+                        <legend class="fieldset-legend pb-0 text-lg">Middle Name</legend>
+                        <input  value="{{ request.POST.middle_name|default:employee.middle_name }}" name="middle_name" class="input w-full {% if error.middle_name.msg %} input-error {% endif %}" placeholder="Hagupit" />
+                        <span class="font-semibold text-error">{{error.middle_name.msg}}</span>        
+                      </fieldset>
+                      <fieldset class="w-full fieldset">
+                        <legend class="fieldset-legend pb-0 text-lg">Ext.</legend>
+                        
+                        <input value="{% if request.POST.ext_name %}{{ request.POST.ext_name }}{% elif employee.name_ext and employee.name_ext != 'None' %}{{ employee.name_ext }}{% endif %}" name="ext_name" class="input w-full {% if error.ext_name.msg %} input-error {% endif %}" placeholder="I,III,Jr.,Sr." />
+                        <span class="font-semibold text-error">{{error.ext_name.msg}}</span>
+                      </fieldset>
+                    </div>
+                  {% comment %}END FIRSTNAME MIDDLENAME EXTNAME{% endcomment %}
+                  {% comment %}LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Last Name</legend>
+                      <input value="{{ request.POST.last_name|default:employee.last_name }}" name="last_name" class="input w-full {% if error.last_name.msg %} input-error {% endif %}" placeholder="Salen" />
+                  <span class="font-semibold text-error">{{error.last_name.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend  pb-0 text-lg">Gender</legend>
+                      <select class="select w-full {% if error.gender.msg %} input-error {% endif %}" name="gender" id="">
+                        <option value="" selected disabled>Select Gender</option>
+                        <option    
+                        {% if  request.POST.gender == "M" or employee.gender == "M" %}
+                          selected
+                        {% endif %}
+                           value="M">Male</option>
+                        <option 
+                        {% if  request.POST.gender == "F" or employee.gender == "F" %}
+                          selected
+                        {% endif %}
+                        value="F">Female</option>
+                      </select>
+
+                  <span class="font-semibold text-error">{{error.gender.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Civil Status</legend>
+                      <select name="civil_status" class="select w-full {% if error.civil_status.msg %} input-error {% endif %}" name="" id="">
+                        <option value="" selected disabled>Select Status</option>
+                        <option {% if  employee.civil_status == "Single" or request.POST.civil_status == "Single" %} selected {% endif %} value="Single">Single</option>
+                        <option {% if  employee.civil_status == "Married" or request.POST.civil_status == "Married" %} selected {% endif %} value="Married">Married</option>
+                        <option {% if  employee.civil_status == "Widowed" or request.POST.civil_status == "Widowed" %} selected {% endif %} value="Widowed">Widowed</option>
+                        <option {% if  employee.civil_status == "Separated" or request.POST.civil_status == "Separated" %} selected {% endif %} value="Separated">Separated</option>
+                        <option {% if  employee.civil_status == "Annulled" or request.POST.civil_status == "Annulled" %} selected {% endif %} value="Annulled">Annulled</option>
+                      </select>
+                  <span class="font-semibold text-error">{{error.civil_status.msg}}</span>
+                    </fieldset>
+                  </div>
+                  {% comment %}END LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  {% comment %}LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date of Birth</legend>
+                      <input type="date"    value="{{ request.POST.date_of_birth|default:employee.date_of_birth|date:'Y-m-d' }}" 
+                   name="date_of_birth" class="input w-full {% if error.date_of_birth.msg %} input-error {% endif %}" placeholder="Salen" />
+                     <span class="font-semibold text-error">{{error.date_of_birth.msg}}</span>
+                    </fieldset>
+                     <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Place of Birth</legend>
+                      <input type="text" value="{{ request.POST.place_of_birth|default:employee.place_of_birth }}" name="place_of_birth" class="input w-full {% if error.place_of_birth.msg %} input-error {% endif %}" placeholder="Labo Camarines Norte" />
+                     <span class="font-semibold text-error">{{error.place_of_birth.msg}}</span>
+                    </fieldset>
+                  
+                
+                  </div>
+                  {% comment %}END LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  {% comment %}MOBILE EMAIL ADDRESS{% endcomment %}
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Mobile No</legend>
+                      <input value="{{ request.POST.mobile_number|default:employee.mobile }}" name="mobile_number" class="input w-full {% if error.mobile_number.msg %} input-error {% endif %}" placeholder="09*******13" />
+                  <span class="font-semibold text-error">{{error.mobile_number.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Email</legend>
+                      <input value="{{ request.POST.email|default:employee.email }}" type="email" name="email" class="input w-full {% if error.email.msg %} input-error {% endif %}" placeholder="H*********n@gmail.com" />
+                  <span class="font-semibold text-error">{{error.email.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Role</legend>
+                      <select name="role" id="role" class="select w-full {% if error.role.msg %} input-error {% endif %}">
+                        <option value="" disabled selected>Select</option>
+                        <option 
+                        {% if  employee.role == "user"%}selected{% endif %}
+                           value="user">User</option>
+                 
+                        <option 
+                        {% if  employee.role == "admin"%}selected{% endif %}
+                           value="admin">Admin</option>
+                      </select>
+                      <span class="font-semibold text-error">{{error.email.msg}}</span>
+                    </fieldset>
+                  </div>
+                      <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                   <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Address</legend>
+                      <input value="{{ request.POST.address|default:employee.address }}" type="text" name="address" class="input w-full {% if error.address.msg %} input-error {% endif %}" placeholder="Purok 4, Brgy. Labo Camarines Norte" />
+                  <span class="font-semibold text-error">{{error.address.msg}}</span>
+                    </fieldset>
+                </div>
+                  {% comment %}END MOBILE EMAIL ADDRESS{% endcomment %}
+                </div>
+              </div>
+              <hr class="mx-5 text-stone-200 mt-5" />
+              {% comment %}TIN GSIS PHILHEALTH SSS{% endcomment %}
+              <h2 class="text-2xl py-3 font-semibold text-green-500">Government ID's</h2>
+              <div class="flex w-full flex-col sm:flex-row">
+                <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">TIN NO.</legend>
+             <input value="{% if request.POST.tin_no %}{{ request.POST.tin_no }}{% elif employee.tin and employee.tin != 'None' %}{{ employee.tin }}{% endif %}"
+       name="tin_no" 
+       class="input w-full {% if error.tin_no.msg %}input-error{% endif %}" 
+       placeholder="000-000-000" />
+                    <span class="font-semibold text-error">{{error.tin_no.msg}}</span>
+                    </fieldset>
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">GSIS NO.</legend>
+                    <input 
+                    value="{% if request.POST.gsis_no %}{{ request.POST.gsis_no }}{% elif employee.gsis and employee.gsis != 'None' %}{{ employee.gsis }}{% endif %}"
+                    name="gsis_no" class="input w-full {% if error.gsis_no.msg %} input-error {% endif %}" placeholder="00000000000" />
+                <span class="font-semibold text-error">{{error.gsis_no.msg}}</span>
+                    </fieldset>
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">PHILHEALTH NO.</legend>
+                    <input 
+                   value="{% if request.POST.philhealth_no %}{{ request.POST.philhealth_no }}{% elif employee.philhealth and employee.philhealth != 'None' %}{{ employee.philhealth }}{% endif %}"
+                    name="philhealth_no" class="input w-full {% if error.philhealth_no.msg %} input-error {% endif %}" placeholder="000000000000" />
+                <span class="font-semibold text-error">{{error.philhealth_no.msg}}</span>
+                    </fieldset>
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">SSS NO.</legend>
+                    <input 
+                 value="{% if request.POST.sss_no %}{{ request.POST.sss_no }}{% elif employee.sss and employee.sss != 'None' %}{{ employee.sss }}{% endif %}"
+                    name="sss_no" class="input w-full {% if error.sss_no.msg %} input-error {% endif %}" placeholder="00-0000000-0" />
+                <span class="font-semibold text-error">{{error.sss_no.msg}}</span>
+                    </fieldset>
+                         <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">PAGIBIG NO.</legend>
+                    <input 
+                    value="{% if request.POST.pagibig %}{{ request.POST.pagibig }}{% elif employee.pagibig and employee.pagibig != 'None' %}{{ employee.pagibig }}{% endif %}"
+                    name="sss_no" class="input w-full {% if error.pagibig.msg %} input-error {% endif %}" placeholder="0000-0000-0000" />
+                <span class="font-semibold text-error">{{error.pagibig.msg}}</span>
+                    </fieldset>
+                </div>
+              </div>
+              {% comment %}END TIN GSIS PHILHEALTH SSS{% endcomment %}
+              <hr class="mx-5 text-stone-200 mt-5" />
+
+              {% comment %}employment id, department position employment status{% endcomment %}
+                <h2 class="text-2xl py-3 font-semibold text-green-500">Employment</h2>
+                <div class="flex w-full flex-col sm:flex-row">
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Employee NO.</legend>
+                      <p class="input w-full">{{emp_id}}</p>
+                      <input class="input w-full" type="hidden" name="employee_id" value="{{emp_id}}">
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Department</legend>
+                      <select name="department" id="" class="select w-full {% if error.department.msg %} input-error {% endif %}">
+                        <option value="" selected disabled>Select Department</option>
+                        {% for department in  departments %}
+                          <option value="{{department.id}}"
+                          {% if request.POST.department == department.id|stringformat:"s" or employee.department_id == department.id %}
+                          selected
+                        {% endif %}
+                          >{{department.name}}</option>
+                        {% endfor %}
+                          
+                      </select>
+             <span class="font-semibold text-error">{{error.department.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Position</legend>
+                      <select name="position" id="" class="select w-full {% if error.position.msg %} input-error {% endif %}">
+                        <option value="" disabled selected>Select Position</option>
+                        {% for position in  positions %}
+                        <option value="{{ position.id }}"
+    {% if request.POST.position == position.id|stringformat:"s" or position.id == employee.position_id %}selected{% endif %}>
+    {{ position.title }}
+  </option>
+                        {% endfor %}
+                       </select>
+                  <span class="font-semibold text-error">{{error.position.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Employment Status</legend>
+                      <select name="employement_status" id="" class="select w-full {% if error.employement_status.msg %} input-error {% endif %}">
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="Regular" 
+                        {% if request.POST.employement_status == "Regular" or employee.employment_status == "Regular" %}
+                          selected
+                        {% endif %}
+                           >Regular Permanent</option>
+                        <option 
+                        {% if request.POST.employement_status == "Casual" or employee.employment_status == "Casual" %}
+                          selected
+                        {% endif %} 
+                        value="Casual">Casual</option>
+                        <option 
+                        {% if request.POST.employement_status == "Coterminous" or employee.employment_status == "Conterminous" %}
+                          selected
+                        {% endif %} 
+                        value="Coterminous">Co-terminous</option>
+                        <option 
+                        {% if request.POST.employement_status == "Job Order" or employee.employment_status == "Job Order" %}
+                          selected
+                        {% endif %} 
+                        value="Job Order">Job Order (JO)</option>
+                        <option 
+                        {% if request.POST.employement_status == "Contract of Service" or employee.employment_status == "Contract of Service" %}
+                          selected
+                        {% endif %} 
+                        value="Contract of Service">Contract of Service (COS)</option>
+                        <option 
+                        {% if request.POST.employement_status == "Elective" or employee.employment_status == "Elective" %}
+                          selected
+                        {% endif %} 
+                        value="Elective">Elective Official</option>
+                        <option 
+                        {% if request.POST.employement_status == "Temporary" or employee.employment_status == "Temporary" %}
+                          selected
+                        {% endif %} 
+                        value="Temporary">Temporary</option>
+                      </select>
+                  <span class="font-semibold text-error">{{error.employement_status.msg}}</span>
+                    </fieldset>
+                  </div>
+                </div>
+              {% comment %}END employment id, department position employment status{% endcomment %}
+
+              {% comment %}DATE HIRED DATE REGULARIZED DATE SEPARATION IS ACTIVE{% endcomment %}
+                <div class="flex w-full flex-col sm:flex-row">
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Hired</legend>
+                  
+                      <input value="{{ request.POST.date_hired|default:employee.date_hired|date:'Y-m-d' }}" type="date" name="date_hired" class="input w-full {% if error.date_hired.msg %} input-error {% endif %}" />
+                  <span class="font-semibold text-error">{{error.date_hired.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Regularized</legend>
+                      <input value="{{ request.POST.date_regularized|default:employee.date_regularized|date:'Y-m-d' }}" type="date" name="date_regularized" class="input w-full {% if error.date_regularized.msg %} input-error {% endif %}" />
+                  <span class="font-semibold text-error">{{error.date_regularized.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Separation</legend>
+                      <input value="{{ request.POST.date_separation|default:employee.date_separation|date:'Y-m-d' }}" type="date" name="date_separation" class="input w-full {% if error.date_separation.msg %} input-error {% endif %}" />
+                  <span class="font-semibold text-error">{{error.date_separation.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Is Employed</legend>
+                      <div class=" {% if error.is_employed.msg %} input-error {% endif %} py-1 rounded-sm border-1 border-stone-300 flex items-center justify-center gap-10 mt-0">
+                       <!-- YES -->
+                      <label class="flex items-center cursor-pointer hover:text-green-600 transition font-medium">
+                        <input type="radio" 
+                              name="is_employed" 
+                              value="True" 
+                              class="radio radio-success" 
+                              {% if request.POST.is_employed == 'True' or employee.is_active == 1 %}checked{% endif %}
+                              required />
+                        <span class="ml-3 text-lg">YES</span>
+                      </label>
+
+                      <!-- NO -->
+                      <label class="flex items-center cursor-pointer hover:text-red-600 transition font-medium">
+                        <input type="radio" 
+                              name="is_employed" 
+                              value="False" 
+                              class="radio radio-error"
+                              {% if request.POST.is_employed == 'False' or employee.is_active == 0 %}checked{% endif %} />
+                        <span class="ml-3 text-lg">NO</span>
+                      </label>
+                      </div>
+                  <span class="font-semibold text-error">{{error.is_employed.msg}}</span>
+                    </fieldset>
+                  </div>
+                </div>
+              {% comment %}END DATE HIRED DATE REGULARIZED DATE SEPARATION IS ACTIVE{% endcomment %}
+              {% comment %}HAS ELIGIBILiTY TYPE RATING DATE OF EXAMINATION{% endcomment %}
+                <div class="flex w-full flex-col sm:flex-row">
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Has Eligibility</legend>
+                      <div class="py-1 rounded-sm border-1 {% if error.has_eligibility.msg %} input-error {% endif %} border-stone-300 flex items-center justify-center gap-10 mt-0">
+                        <!-- YES -->
+    <label class="flex items-center cursor-pointer hover:text-green-600 transition font-medium text-lg">
+      <input 
+        type="radio" 
+        name="has_eligibility" 
+        value="True" 
+        class="radio radio-success" 
+        {% if request.POST.has_eligibility == 'True' or employee.has_eligibility == 1 %}checked{% endif %}
+        required />
+      <span class="ml-3">YES</span>
+    </label>
+
+    <!-- NO -->
+    <label class="flex items-center cursor-pointer hover:text-red-600 transition font-medium text-lg">
+      <input 
+        type="radio" 
+        name="has_eligibility" 
+        value="False" 
+        class="radio radio-error"
+        {% if request.POST.has_eligibility == 'False' or employee.has_eligibility == 0 %}checked{% endif %}
+        required />
+      <span class="ml-3">NO</span>
+    </label>
+                      </div>
+                  <span class="font-semibold text-error">{{error.has_eligibility.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Eligibility Type</legend>
+                  <select name="eligibility_type" class="select select-bordered w-full {% if error.eligibility_type.msg %}select-error{% endif %}">
+      <option value="" disabled {% if not request.POST.eligibility_type %}selected{% endif %}>
+        Select Eligibility
+      </option>
+      <option value="RA 1080 (Board/Bar)"                                       {% if employee.eligibility_type == "RA 1080 (Board/Bar)" or request.POST.eligibility_type == "RA 1080 (Board/Bar)" %}selected{% endif %}>RA 1080 (Board/Bar)</option>
+      <option value="Career Service Professional"                               {% if employee.eligibility_type == "Career Service Professional" or request.POST.eligibility_type == "Career Service Professional" %}selected{% endif %}>Career Service Professional</option>
+      <option value="Career Service Subprofessional"                            {% if employee.eligibility_type == "Career Service Subprofessional" or request.POST.eligibility_type == "Career Service Subprofessional" %}selected{% endif %}>Career Service Subprofessional</option>
+      <option value="Honor Graduate Eligibility"                                {% if employee.eligibility_type == "Honor Graduate Eligibility" or request.POST.eligibility_type == "Honor Graduate Eligibility" %}selected{% endif %}>Honor Graduate Eligibility</option>
+      <option value="Barangay Official Eligibility"                             {% if employee.eligibility_type == "Barangay Official Eligibility" or request.POST.eligibility_type == "Barangay Official Eligibility" %}selected{% endif %}>Barangay Official Eligibility</option>
+      <option value="Barangay Health Worker Eligibility"                        {% if employee.eligibility_type == "Barangay Health Worker Eligibility" or request.POST.eligibility_type == "Barangay Health Worker Eligibility" %}selected{% endif %}>Barangay Health Worker Eligibility</option>
+      <option value="Barangay Nutrition Scholar Eligibility"                    {% if employee.eligibility_type == "Barangay Nutrition Scholar Eligibility" or request.POST.eligibility_type == "Barangay Nutrition Scholar Eligibility" %}selected{% endif %}>Barangay Nutrition Scholar Eligibility</option>
+      <option value="Scientific and Technological Specialist Eligibility"       {% if employee.eligibility_type == "Scientific and Technological Specialist Eligibility" or request.POST.eligibility_type == "Scientific and Technological Specialist Eligibility" %}selected{% endif %}>Scientific and Technological Specialist Eligibility</option>
+      <option value="Veteran Preference Rating"                                 {% if employee.eligibility_type == "Veteran Preference Rating" or request.POST.eligibility_type == "Veteran Preference Rating" %}selected{% endif %}>Veteran Preference Rating</option>
+      <option value="PD 997 (Magna Carta for Scientists)"                       {% if employee.eligibility_type == "PD 997 (Magna Carta for Scientists)" or request.POST.eligibility_type == "PD 997 (Magna Carta for Scientists)" %}selected{% endif %}>PD 997 (Magna Carta for Scientists)</option>
+      <option value="PD 1569 (Barangay Captain)"                                {% if employee.eligibility_type == "PD 1569 (Barangay Captain)" or request.POST.eligibility_type == "PD 1569 (Barangay Captain)" %}selected{% endif %}>PD 1569 (Barangay Captain)</option>
+      <option value="E.O. 132/790 (Foreign School Honor Graduate)"              {% if employee.eligibility_type == "E.O. 132/790 (Foreign School Honor Graduate)" or request.POST.eligibility_type == "E.O. 132/790 (Foreign School Honor Graduate)" %}selected{% endif %}>E.O. 132/790 (Foreign School Honor Graduate)</option>
+      <option value="Skills Eligibility (Category II)"                          {% if employee.eligibility_type == "Skills Eligibility (Category II)" or request.POST.eligibility_type == "Skills Eligibility (Category II)" %}selected{% endif %}>Skills Eligibility (Category II)</option>
+      <option value="Electronic Data Processing Specialist Eligibility (EDPSE)" {% if employee.eligibility_type == "Electronic Data Processing Specialist Eligibility (EDPSE)" or request.POST.eligibility_type == "Electronic Data Processing Specialist Eligibility (EDPSE)" %}selected{% endif %}>Electronic Data Processing Specialist Eligibility (EDPSE)</option>
+      <option value="None"                                                      {% if employee.eligibility_type == "None" or request.POST.eligibility_type == "None" %}selected{% endif %}>None / Not Applicable</option>
+    </select>
+                  <span class="font-semibold text-error">{{error.eligibility_type.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Ratings</legend>
+                      <input value="{{ request.POST.ratings|default:employee.rating }}" type="number" name="ratings" class="input w-full {% if error.ratings.msg %} input-error {% endif %}" placeholder="80.0" />
+                  <span class="font-semibold text-error">{{error.ratings.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Of Examination</legend>
+                      <input value="{{ request.POST.date_examination|default:employee.date_of_examination|date:'Y-m-d' }}" type="date" name="date_examination" class="input w-full {% if error.date_examination.msg %} input-error {% endif %}" />
+                  <span class="font-semibold text-error">{{error.date_examination.msg}}</span>
+  </fieldset>
+                  </div>
+                </div>
+              {% comment %}END HAS ELIGIBILiTY TYPE RATING DATE OF EXAMINATION{% endcomment %}
+
+                <div class="w-full flex justify-end pt-3">
+<button type="button" class="btn btn-warning btn-lg" onclick="confirm_modal.showModal()">
+    <i class="fas fa-save"></i> Update Employee
+  </button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+<dialog id="confirm_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg text-gray-800">Confirm Update</h3>
+      <p class="py-4">Are you sure you want to update this new employee? This action cannot be undone.</p>
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-3">
+        <button type="button" class="btn btn-ghost" onclick="confirm_modal.close()">
+        Cancel
+      </button>
+      
+      <!-- This button submits the original form and closes modal -->
+      <button type="submit" 
+              form="employeeForm" 
+              class="btn btn-success"
+              onclick="confirm_modal.close()">
+        <i class="fas fa-check mr-2"></i> Yes, Update Employee
+      </button>
+        </form>
+      </div>
+    </div>
+    <!-- Click outside to close -->
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+    {% include 'sidebar.html' %}
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'employee/dist/js/profile.js' %}"></script>
+ <script>
+document.getElementById('confirm_modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        e.currentTarget.close();
+    }
+});
+</script>
+{% endblock %}

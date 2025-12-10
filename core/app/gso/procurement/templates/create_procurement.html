@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Procurement - Bayan ng Labo{% endblock %}
+
+{% block main %}
+<div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+  <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+  <div class="drawer-content flex flex-col">
+    {% include 'navbar.html' %}
+
+    <main class="flex-1">
+      <!-- Header -->
+      <div class="bg-green-500 h-16 flex items-end justify-end px-4 md:px-6">
+        <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-white pb-3">
+          <a href="{% url 'event_calendar' %}" target="_blank" class="hover:underline">PROCUREMENT TRACKER</a>
+        </h1>
+      </div>
+
+      <!-- Messages -->
+      {% if messages %}
+        <div class="px-6 mt-6 space-y-3">
+          {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %} shadow-lg">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- General Error -->
+      {% if error.non_field_errors %}
+        <div class="px-6 mt-6">
+          <div class="alert alert-error shadow-lg">
+            <span>{{ error.non_field_errors.errors }}</span>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="p-6 lg:p-8">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div class="bg-gradient-to-r from-green-600 to-green-700 p-8 text-center">
+            <h2 class="text-4xl font-bold text-white">Create Procurement Record</h2>
+          </div>
+
+          <form method="post" class="p-8 lg:p-12 space-y-10">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+              <!-- Person Responsible -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Person Responsible <span class="text-red-500">*</span></span></label>
+                <select name="person_responsible" class="select select-bordered w-full {% if error.person_responsible %}select-error{% endif %}" required>
+                  <option value="" disabled {% if not request.POST.person_responsible %}selected{% endif %}>Select Employee</option>
+                  {% for emp in employees %}
+                    <option value="{{ emp.id }}" {% if request.POST.person_responsible == emp.id|stringformat:"s" %}selected{% endif %}>
+                      {{ emp.last_name }}, {{ emp.first_name }}
+                    </option>
+                  {% endfor %}
+                </select>
+                {% if error.person_responsible %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.person_responsible.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Purchase No -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Purchase No <span class="text-red-500">*</span></span></label>
+                <input type="text" name="purchase_no" value="{{ request.POST.purchase_no|default:'' }}"
+                       class="input input-bordered w-full {% if error.purchase_no %}input-error{% endif %}" required />
+                {% if error.purchase_no %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.purchase_no.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Date of Purchase -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date of Purchase</span></label>
+                <input type="date" name="date_purchase" value="{{ request.POST.date_purchase|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_purchase %}input-error{% endif %}" />
+                {% if error.date_purchase %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.date_purchase.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- End User (Department) -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">End User <span class="text-red-500">*</span></span></label>
+                <select name="end_user" class="select select-bordered w-full {% if error.end_user %}select-error{% endif %}" required>
+                  <option value="" disabled {% if not request.POST.end_user %}selected{% endif %}>Select Department</option>
+                  {% for dept in departments %}
+                    <option value="{{ dept.id }}" {% if request.POST.end_user == dept.id|stringformat:"s" %}selected{% endif %}>
+                      {{ dept.abbreviation }} - {{ dept.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+                {% if error.end_user %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.end_user.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Type of Good -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Type of Good <span class="text-red-500">*</span></span></label>
+                <select name="type_of_good" class="select select-bordered w-full {% if error.type_of_good %}select-error{% endif %}" required>
+                  <option value="" disabled {% if not request.POST.type_of_good %}selected{% endif %}>Select Type</option>
+                  {% for good in goods %}
+                    <option value="{{ good.id }}" {% if request.POST.type_of_good == good.id|stringformat:"s" %}selected{% endif %}>
+                      {{ good.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+                {% if error.type_of_good %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.type_of_good.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Approved Budget -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Approved Budget</span></label>
+                <input type="number" step="0.01" id="budgetInput" name="approved_budget" value="{{ request.POST.approved_budget|default:'' }}"
+                       class="input input-bordered w-full {% if error.approved_budget %}input-error{% endif %}" />
+                {% if error.approved_budget %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.approved_budget.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Charging -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Charging</span></label>
+                <input type="text" name="charging" value="{{ request.POST.charging|default:'' }}"
+                       class="input input-bordered w-full {% if error.charging %}input-error{% endif %}" />
+                {% if error.charging %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.charging.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Mode of Procurement -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Mode of Procurement <span class="text-red-500">*</span></span></label>
+                <select name="mode_of_procurement" class="select select-bordered w-full {% if error.mode_of_procurement %}select-error{% endif %}" required>
+                  <option value="" disabled {% if not request.POST.mode_of_procurement %}selected{% endif %}>Select Mode</option>
+                  {% for mode in Modes %}
+                    <option value="{{ mode.id }}" {% if request.POST.mode_of_procurement == mode.id|stringformat:"s" %}selected{% endif %}>
+                      {{ mode.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+                {% if error.mode_of_procurement %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.mode_of_procurement.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Min of Meeting -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Min of Meeting</span></label>
+                <input type="text" name="min_of_meeting" value="{{ request.POST.min_of_meeting|default:'' }}"
+                       class="input input-bordered w-full {% if error.min_of_meeting %}input-error{% endif %}" />
+                {% if error.min_of_meeting %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.min_of_meeting.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- BAC Resolution -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">BAC Resolution</span></label>
+                <input type="text" name="bac_resolution" value="{{ request.POST.bac_resolution|default:'' }}"
+                       class="input input-bordered w-full {% if error.bac_resolution %}input-error{% endif %}" />
+                {% if error.bac_resolution %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.bac_resolution.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Proof of Service -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Proof of Service</span></label>
+                <input type="text" name="proof_of_service" value="{{ request.POST.proof_of_service|default:'' }}"
+                       class="input input-bordered w-full {% if error.proof_of_service %}input-error{% endif %}" />
+                {% if error.proof_of_service %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.proof_of_service.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- RFQ's -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">RFQ's</span></label>
+                <input type="text" name="rfqs" value="{{ request.POST.rfqs|default:'' }}"
+                       class="input input-bordered w-full {% if error.rfqs %}input-error{% endif %}" />
+                {% if error.rfqs %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.rfqs.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Winning Supplier -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Winning Supplier</span></label>
+                <input type="text" name="winning_supplier" value="{{ request.POST.winning_supplier|default:'' }}"
+                       class="input input-bordered w-full {% if error.winning_supplier %}input-error{% endif %}" />
+                {% if error.winning_supplier %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.winning_supplier.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Recommending the Award -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Recommending the Award</span></label>
+                <input type="text" name="recommending_award" value="{{ request.POST.recommending_award|default:'' }}"
+                       class="input input-bordered w-full {% if error.recommending_award %}input-error{% endif %}" />
+                {% if error.recommending_award %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.recommending_award.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- PhilGEPS -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">PhilGEPS</span></label>
+                <input type="text" name="philgeps" value="{{ request.POST.philgeps|default:'' }}"
+                       class="input input-bordered w-full {% if error.philgeps %}input-error{% endif %}" />
+                {% if error.philgeps %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.philgeps.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Purchase Order No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Purchase Order No.</span></label>
+                <input type="text" name="po_number" value="{{ request.POST.po_number|default:'' }}"
+                       class="input input-bordered w-full {% if error.po_number %}input-error{% endif %}" />
+                {% if error.po_number %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.po_number.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Posting of Award -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Posting of Award</span></label>
+                <input type="date" name="posting_of_award" value="{{ request.POST.posting_of_award|default:'' }}"
+                       class="input input-bordered w-full {% if error.posting_of_award %}input-error{% endif %}" />
+                {% if error.posting_of_award %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.posting_of_award.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- PhilGEPS Reg No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">PhilGEPS Reg No.</span></label>
+                <input type="text" name="philgeps_reg_no" value="{{ request.POST.philgeps_reg_no|default:'' }}"
+                       class="input input-bordered w-full {% if error.philgeps_reg_no %}input-error{% endif %}" />
+                {% if error.philgeps_reg_no %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.philgeps_reg_no.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Mayor's No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Mayor's No.</span></label>
+                <input type="text" name="mayors_no" value="{{ request.POST.mayors_no|default:'' }}"
+                       class="input input-bordered w-full {% if error.mayors_no %}input-error{% endif %}" />
+                {% if error.mayors_no %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.mayors_no.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Date of Delivery -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date of Delivery</span></label>
+                <input type="date" name="date_delivery" value="{{ request.POST.date_delivery|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_delivery %}input-error{% endif %}" />
+                {% if error.date_delivery %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.date_delivery.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Date Received -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date Received</span></label>
+                <input type="date" name="date_received" value="{{ request.POST.date_received|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_received %}input-error{% endif %}" />
+                {% if error.date_received %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.date_received.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Check No. -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Check No.</span></label>
+                <input type="text" name="check_no" value="{{ request.POST.check_no|default:'' }}"
+                       class="input input-bordered w-full {% if error.check_no %}input-error{% endif %}" />
+                {% if error.check_no %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.check_no.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Date of Check -->
+              <div class="form-control">
+                <label class="label"><span class="label-text font-bold">Date of Check</span></label>
+                <input type="date" name="date_check" value="{{ request.POST.date_check|default:'' }}"
+                       class="input input-bordered w-full {% if error.date_check %}input-error{% endif %}" />
+                {% if error.date_check %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.date_check.errors }}</span></label>
+                {% endif %}
+              </div>
+
+              <!-- Remarks (Full Width) -->
+              <div class="form-control col-span-full">
+                <label class="label"><span class="label-text font-bold">Remarks</span></label>
+                <textarea name="remarks" rows="5" class="textarea textarea-bordered w-full {% if error.remarks %}textarea-error{% endif %}">
+{{ request.POST.remarks|default:'' }}</textarea>
+                {% if error.remarks %}
+                  <label class="label"><span class="label-text-alt text-error text-sm">{{ error.remarks.errors }}</span></label>
+                {% endif %}
+              </div>
+
+            </div>
+
+            <!-- Submit & Cancel -->
+            <div class="flex justify-center gap-8 mt-16">
+              <button type="submit" class="btn btn-success btn-lg px-20 text-xl">
+                Save Record
+              </button>
+              <a href="{% url 'gso:procurement' %}" class="btn btn-error btn-lg px-20 text-xl">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  {% include 'sidebar.html' %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  LGU Admin  Employee - Bayan ng Labo
+{% endblock %}
+
+{% block main %}
+  <div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input value="{{ emp.first_name|default:'' }}" id="sidebar" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex flex-col">
+      {% include 'navbar.html' %}
+
+      <main class="flex-1">
+        <!-- Header -->
+        <div class="bg-green-500 h-16 flex items-end justify-end px-4 md:px-6">
+          <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-white pb-3">LGU - EMPLOYEE</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="p-4 md:p-6 lg:p-8">
+          <div class="bg-white lg:p-10 p-2 shadow-md rounded-lg">
+            <!-- Add Button -->
+            <div class="p-4 border-b w-full border-gray-200 flex justify-center items-center flex-wrap gap-3">
+              <h2 class="text-3xl text-end font-semibold text-gray-800">View Employee - {{emp.employee_id}}</h2>
+            </div>
+            <form action="" id="employeeForm" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <h2 class="text-2xl py-3 font-semibold text-green-500">Personal Information</h2>
+              <div class="flex w-full flex-col sm:flex-row">
+                <div class="w-full sm:w-[25%] flex justify-center">
+
+                  <div id="profile-preview" class="w-[250px] flex flex-col justify-center items-center">
+  <!-- Preview Image (starts with default photo) -->
+  <img src="{{ emp.profile_picture.url }}"
+       id="preview-img"
+       class="w-[230px] h-[230px] object-cover border-4 border-gray-300 shadow-lg transition-all"
+       alt="Profile Preview">
+
+  <!-- File Input (NEVER gets replaced!) -->
+  <div class="mt-4 text-center">
+   
+  </div>
+</div>
+                </div>
+                <div class="w-full sm:w-[75%]  p-3">
+                  {% comment %}FIRSTNAME MIDDLENAME EXTNAME{% endcomment %}
+                    <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                      <fieldset class="w-full fieldset">
+                        <legend class="fieldset-legend pb-0 text-lg">First Name</legend>
+                        <p class="input w-full">{{emp.first_name}}</p>
+                    </fieldset>
+                      <fieldset class="w-full fieldset">
+                        <legend class="fieldset-legend pb-0 text-lg">Middle Name</legend>
+                        <p class="input w-full">{{emp.middle_name}}</p>
+                    </fieldset>
+                      <fieldset class="w-full fieldset">
+                        <legend class="fieldset-legend pb-0 text-lg">Ext.</legend>
+                        <p class="input w-full">
+                            
+                            {{ emp.name_ext|default_if_none:''|default:'' }}
+                            </p>
+                    </fieldset>
+                    </div>
+                  {% comment %}END FIRSTNAME MIDDLENAME EXTNAME{% endcomment %}
+                  {% comment %}LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Last Name</legend>
+                        <p class="input w-full">{{emp.last_name}}</p>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend  pb-0 text-lg">Gender</legend>
+                     <p class="input w-full">
+                        {% if emp.gender == 'M' %}
+                            Male
+                        {% else %}
+                            Female
+                        {% endif %}
+                            
+                     </p>
+
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Civil Status</legend>
+                  
+                      <p class="input w-full">
+                        {% if  emp.civil_status == "Single" %} Single {% endif %}
+                        {% if  emp.civil_status == "Married" %} Married {% endif %}
+                        {% if  emp.civil_status == "Widowed" %} Widowed {% endif %}
+                        {% if  emp.civil_status == "Separated" %} Separated {% endif %}
+                        {% if  emp.civil_status == "Annulled" %} Annulled {% endif %}
+                      </p>
+                    </fieldset>
+                  </div>
+                  {% comment %}END LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  {% comment %}LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date of Birth</legend>
+                        <p class="input w-full">{{emp.date_of_birth}}</p>
+                    </fieldset>
+                     <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Place of Birth</legend>
+                      <input type="text" readonly value="{{ emp.place_of_birth|default:'' }}" name="place_of_birth" class="input w-full {% if error.place_of_birth.msg %} input-error {% endif %}" placeholder="Salen" />
+                    </fieldset>
+                  
+                
+                  </div>
+                  {% comment %}END LASTNAME GENDER CIVIL STATUS{% endcomment %}
+                  {% comment %}MOBILE EMAIL ADDRESS{% endcomment %}
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Mobile No</legend>
+                      <input readonly value="{{ emp.mobile|default:'' }}" name="mobile_number" class="input w-full {% if error.mobile_number.msg %} input-error {% endif %}" placeholder="09*******13" />
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Email</legend>
+                      <input readonly value="{{ emp.email|default:'' }}" type="email" name="email" class="input w-full {% if error.email.msg %} input-error {% endif %}" placeholder="H*********n@gmail.com" />
+                  <span class="font-semibold text-error">{{error.email.msg}}</span>
+                    </fieldset>
+                  
+                  </div>
+                  <div class="w-full flex flex-col justify-evenly gap-3 sm:flex-row">
+                      <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Address</legend>
+                      <input readonly value="{{ emp.address|default:'' }}" type="text" name="address" class="input w-full {% if error.address.msg %} input-error {% endif %}" placeholder="Purok 4, Brgy. Labo Camarines Norte" />
+                  <span class="font-semibold text-error">{{error.address.msg}}</span>
+                    </fieldset>
+                  </div>
+                  {% comment %}END MOBILE EMAIL ADDRESS{% endcomment %}
+                </div>
+              </div>
+              <hr class="mx-5 text-stone-200 mt-5" />
+              {% comment %}TIN GSIS PHILHEALTH SSS{% endcomment %}
+              <h2 class="text-2xl py-3 font-semibold text-green-500">Government ID's</h2>
+              <div class="flex w-full flex-col sm:flex-row">
+                <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">TIN NO.</legend>
+                    <input readonly value="{{ emp.tin|default:'' }}" name="tin_no" class="input w-full {% if error.tin_no.msg %} input-error {% endif %}" placeholder="000-000-000" />
+                <span class="font-semibold text-error">{{error.tin_no.msg}}</span>
+                    </fieldset>
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">GSIS NO.</legend>
+                    <input readonly value="{{ emp.gsis|default:'' }}" name="gsis_no" class="input w-full {% if error.gsis_no.msg %} input-error {% endif %}" placeholder="00000000000" />
+                <span class="font-semibold text-error">{{error.gsis_no.msg}}</span>
+                    </fieldset>
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">PHILHEALTH NO.</legend>
+                    <input readonly value="{{ emp.philhealth|default:'' }}" name="philhealth_no" class="input w-full {% if error.philhealth_no.msg %} input-error {% endif %}" placeholder="000000000000" />
+                <span class="font-semibold text-error">{{error.philhealth_no.msg}}</span>
+                    </fieldset>
+                  <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">SSS NO.</legend>
+                    <input readonly value="{{ emp.sss|default:'' }}" name="sss_no" class="input w-full {% if error.sss_no.msg %} input-error {% endif %}" placeholder="00-0000000-0" />
+                <span class="font-semibold text-error">{{error.sss_no.msg}}</span>
+                    </fieldset>
+                         <fieldset class="w-full fieldset">
+                    <legend class="fieldset-legend pb-0 text-lg">PAGIBIG NO.</legend>
+                    <input readonly value="{{ emp.pagibig|default:'' }}" name="sss_no" class="input w-full {% if error.pagibig.msg %} input-error {% endif %}" placeholder="0000-0000-0000" />
+                <span class="font-semibold text-error">{{error.pagibig.msg}}</span>
+                    </fieldset>
+                </div>
+              </div>
+              {% comment %}END TIN GSIS PHILHEALTH SSS{% endcomment %}
+              <hr class="mx-5 text-stone-200 mt-5" />
+
+              {% comment %}employment id, department position employment status{% endcomment %}
+                <h2 class="text-2xl py-3 font-semibold text-green-500">Employment</h2>
+                <div class="flex w-full flex-col sm:flex-row">
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Employee NO.</legend>
+                      <p class="input w-full">{{emp.employee_id}}</p>
+                      <input class="input w-full" type="hidden" name="employee_id" value="{{emp_id}}">
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Department</legend>
+                    
+                      <p name="department" id="" class="input w-full {% if error.department.msg %} input-error {% endif %}">
+                        {% for department in  departments %}
+                          <option value="{{department.id}}"
+                          {% if emp.department_id == department.id %}
+                          selected
+                        {% endif %}
+                          >{{department.name}}</option>
+                        {% endfor %}
+                          
+                      </p>
+             <span class="font-semibold text-error">{{error.department.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Position</legend>
+                      <p name="position" id="" class="input w-full {% if error.position.msg %} input-error {% endif %}">
+                        {% for position in  positions %}
+                        <option value="{{ position.id }}"
+    {% if emp.position_id == position.id %}selected{% endif %}>
+    {{ position.title }}
+  </option>
+                        {% endfor %}
+                       </p>
+                  <span class="font-semibold text-error">{{error.position.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                       
+                      <legend class="fieldset-legend pb-0 text-lg">Employment Status</legend>
+                      <p name=employement_status" id="" class="input w-full">
+                         {{emp.employment_status}}
+                                            </p>
+                    </fieldset>
+                  </div>
+                </div>
+              {% comment %}END employment id, department position employment status{% endcomment %}
+
+              {% comment %}DATE HIRED DATE REGULARIZED DATE SEPARATION IS ACTIVE{% endcomment %}
+                <div class="flex w-full flex-col sm:flex-row">
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Hired</legend>
+                      <p  name="date_hired" class="input w-full {% if error.date_hired.msg %} input-error {% endif %}" >{{emp.date_hired}}</p>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Regularized</legend>
+                      <p  name="date_hired" class="input w-full {% if error.date_hired.msg %} input-error {% endif %}" >{{emp.date_regularized}}</p>
+                
+                      <span class="font-semibold text-error">{{error.date_regularized.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Separation</legend>
+                      <p  name="date_hired" class="input w-full {% if error.date_hired.msg %} input-error {% endif %}" >{{emp.date_separation}}</p>
+                        
+                      <span class="font-semibold text-error">{{error.date_separation.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Is Employed</legend>
+                      <p class="input" >
+                       <!-- YES -->
+                        
+                        {% if emp.is_active == 1 %}
+                        YES
+                            {% else %}
+                            NO
+                        {% endif %}
+                            
+                      </p>
+                  <span class="font-semibold text-error">{{error.is_employed.msg}}</span>
+                    </fieldset>
+                  </div>
+                </div>
+              {% comment %}END DATE HIRED DATE REGULARIZED DATE SEPARATION IS ACTIVE{% endcomment %}
+              {% comment %}HAS ELIGIBILiTY TYPE RATING DATE OF EXAMINATION{% endcomment %}
+                <div class="flex w-full flex-col sm:flex-row">
+                  <div class="w-full flex flex-col sm:flex-row justify-evenly gap-3">
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Has Eligibility</legend>
+                    <p class="input w-full">
+                          {% if emp.has_eligibility == 1 %}
+                        YES
+                            {% else %}
+                            NO
+                        {% endif %}
+                    </p>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Eligibility Type</legend>
+                        <p class="input w-full">
+                            {{emp.eligibility_type}}
+                        </p>
+                  <span class="font-semibold text-error">{{error.eligibility_type.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Ratings</legend>
+                        <p class="w-full input">{{emp.rating}}</p>
+                      <span class="font-semibold text-error">{{error.ratings.msg}}</span>
+                    </fieldset>
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Date Of Examination</legend>
+                      <p  name="date_examination" class="input w-full {% if error.date_examination.msg %} input-error {% endif %}" >{{emp.date_of_examination}}</p>
+                  <span class="font-semibold text-error">{{error.date_examination.msg}}</span>
+  </fieldset>
+                  </div>
+                </div>
+              {% comment %}END HAS ELIGIBILiTY TYPE RATING DATE OF EXAMINATION{% endcomment %}
+
+             
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    {% include 'sidebar.html' %}
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'employee/dist/js/profile.js' %}"></script>
+ <script>
+document.getElementById('confirm_modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        e.currentTarget.close();
+    }
+});
+</script>
+{% endblock %}
