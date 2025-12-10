@@ -1,62 +1,89 @@
-<!-- SIDEBAR -->
+<!-- sidebar.html -->
+{% load sidebar_tags %}
+{% check_role as user_role %}
+{% check_if_gso as is_gso %}
+{% check_education as education %}
+{% check_event as event %}
+{% check_employee as employee %}
 {% load static %}
-
-<div class="drawer-side">
+<div class="drawer-side z-50">
   <label for="sidebar" class="drawer-overlay"></label>
-  <ul class="menu p-4 w-80 bg-white h-full text-base-content">
-    <div class="flex items-center gap-4 mb-8 p-4 text-stone-800 rounded-box">
+  
+  <!-- Sidebar Content -->
+  <ul class="menu p-4 w-64 min-h-full bg-white text-base-content transition-all duration-300">
+    
+    <!-- Logo + Title -->
+    <div class="flex flex-col items-center gap-4 mb-2 p-4 rounded-box">
       <img src="{% static 'images/icon.png' %}" class="w-16 h-16 rounded-full" alt="LGU Logo" />
       <div>
-        <div class="font-bold text-xl text-start">Municipality of Labo</div>
-        <div class="text-sm opacity-80">Camarines Norte</div>
+  
+        <div class="font-bold text-lg text-center">Municipality of Labo</div>
+        <div class="text-sm opacity-80 text-center">Camarines Norte</div>
       </div>
     </div>
-    <hr class="text-stone-800" />
-    <br />
-    <br />
-    <li class="text-[1.2em]">
-      <a href="{% url 'dashboard' %}"
-        class="
-                        {% if active == 'dashboard' %}
-          
-                            bg-green-500 text-white
+    <hr class="border-gray-300" /><br /><br />
 
-        {% else %}
-          text-gray-700 hover:bg-gray-100
-        {% endif %}
-                ">
+    <!-- Menu Items -->
+    <li class="text-md">
+      <a href="{% url 'dashboard' %}" class="{% if active == 'dashboard' %}bg-green-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} rounded-lg">
         <i class="fa-solid fa-chart-simple"></i> Dashboard
       </a>
     </li>
-    <li class="text-[1.2em]">
-      <a href="{% url 'event' %}"
-        class="
-                {% if active == 'event' %}
-          
-    bg-green-500 text-white
+    
+    {% if employee %}
+      
+      
+    <li class="text-md">
+      <a href="{% url 'employee:view' %}" class="{% if active == 'employee' %}bg-green-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} rounded-lg">
+        <i class="fas fa-users"></i> Employee
+      </a>
+    </li>
+    {% endif %}
 
-        {% else %}
-          
-    text-gray-700 hover:bg-gray-100
-
-        {% endif %}
-                ">
+    {% if event %}
+      
+      
+    <li class="text-md">
+      <a href="{% url 'event' %}" class="{% if active == 'event' %}bg-green-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} rounded-lg">
         <i class="fa-regular fa-calendar-days"></i> Event Venue
       </a>
     </li>
-    <li class="text-[1.2em]">
-      <a href="{% url 'education:view' %}"
-        class=" {% if active == 'education' %}
-                    bg-green-500 text-white 
-                {% else %} 
-                    text-gray-700 hover:bg-gray-100 
-                {% endif %}">
+
+    {% endif %}
+    {% if education %}
+
+    <li class="text-md">
+      <a href="{% url 'education:view' %}" class="{% if active == 'education' %}bg-green-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} rounded-lg">
         <i class="fas fa-book"></i> Education
       </a>
     </li>
+    {% endif %}
+    {% if is_gso %}
+      
+      
+    <!-- GENERAL SERVICES (Dropdown + Always Highlighted if Active) -->
+    <li class="text-md">
+      <details {% is_gso_active request active %}>
+        <summary class="{% is_gso_active_class request active %} cursor-pointer rounded-lg">
+          <i class="fas fa-building"></i> <span class="text-md">General Services</span>
+        </summary>
+        <ul class="ml-4 mt-2 space-y-1">
+          <li class="text-md"><a href="{% url 'gso:procurement' %}" class="{% if active == 'procurement' or active == 'procurement_create' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">Procurement</a></li>
+          <li class="text-md"><a href="#" class="{% if active == 'inventory' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">Inventory</a></li>
+          <li class="text-md"><a href="#" class="{% if active == 'supplies' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">Supplies Request</a></li>
+          <li class="text-md"><a href="#" class="{% if active == 'vehicle' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">Vehicle Request</a></li>
+          <li class="text-md"><a href="#" class="{% if active == 'reports' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">Reports</a></li>
+        </ul>
+      </details>
+    </li>
+
+    {% endif %}
+    <!-- Logout at Bottom -->
     <div class="mt-auto pt-8">
       <li>
-        <a href="/lgu/accounts/logout/" class="btn text-red-500">Logout</a>
+        <a href="{% url 'logout' %}" class="btn btn-outline btn-error w-full">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
       </li>
     </div>
   </ul>
