@@ -11,8 +11,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-7iue1t1p937up2%dn_l*=o)z8@e49ntb3-r!%f*+a&m8944091'
 DEBUG = True
-ALLOWED_HOSTS = ['localhost','labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
+ALLOWED_HOSTS = ['localhost','https://lgu.labocamnorte.site','lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
 CSRF_TRUSTED_ORIGINS = [
+    'https://lgu.labocamnorte.site',
     'https://labocamnorte.site',
     'http://labocamnorte.site',
     'https://www.labocamnorte.site',
@@ -116,15 +117,15 @@ USE_TZ = True
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # IMPORTANT: tell Django it is running under /lgu/
-FORCE_SCRIPT_NAME = '/lgu'
-USE_X_FORWARDED_HOST = True
+# FORCE_SCRIPT_NAME = '/lgu'
+# USE_X_FORWARDED_HOST = True
 
 # Static & Media
-STATIC_URL = '/lgu/static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
-MEDIA_URL = '/lgu/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

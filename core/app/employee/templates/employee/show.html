@@ -120,7 +120,20 @@
                       <input readonly value="{{ emp.email|default:'' }}" type="email" name="email" class="input w-full {% if error.email.msg %} input-error {% endif %}" placeholder="H*********n@gmail.com" />
                   <span class="font-semibold text-error">{{error.email.msg}}</span>
                     </fieldset>
-                  
+                   <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Role</legend>
+                      <select name="role" id="role" class="select w-full {% if error.role.msg %} input-error {% endif %}">
+                        <option value="" disabled selected>Select</option>
+                        <option 
+                        {% if  emp.role == "user"%}selected{% endif %}
+                           value="user">User</option>
+                 
+                        <option 
+                        {% if  emp.role == "admin"%}selected{% endif %}
+                           value="admin">Admin</option>
+                      </select>
+                      <span class="font-semibold text-error">{{error.email.msg}}</span>
+                    </fieldset>
                   </div>
                   <div class="w-full flex flex-col justify-evenly gap-3 sm:flex-row">
                       <fieldset class="w-full fieldset">

@@ -140,7 +140,7 @@
                     </fieldset>
                      <fieldset class="w-full fieldset">
                       <legend class="fieldset-legend pb-0 text-lg">Place of Birth</legend>
-                      <input type="text" value="{{ request.POST.place_of_birth|default:'' }}" name="place_of_birth" class="input w-full {% if error.place_of_birth.msg %} input-error {% endif %}" placeholder="Salen" />
+                      <input type="text" value="{{ request.POST.place_of_birth|default:'' }}" name="place_of_birth" class="input w-full {% if error.place_of_birth.msg %} input-error {% endif %}" placeholder="Labo" />
                      <span class="font-semibold text-error">{{error.place_of_birth.msg}}</span>
                     </fieldset>
                   
@@ -169,7 +169,7 @@
             
                         <option value="admin">Admin</option>
                       </select>
-                      <span class="font-semibold text-error">{{error.email.msg}}</span>
+                      <span class="font-semibold text-error">{{error.role.msg}}</span>
                     </fieldset>
                    
                   </div>
