@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Application Form - Bayan ng Labo{% endblock %}
+
+{% block main %}
+<main class="flex-1">
+       {% if errors.datas %}
+    <div id="error-alert-container" class="fixed top-4 right-4 z-50 max-w-sm">
+        <div role="alert" class="alert alert-error shadow-xl rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ errors.datas }}</span>
+        </div>
+    </div>
+      {% endif %}
+    <header class="w-full">
+        <img src="{% static 'applicant/images/ea.png' %}" class="w-full" alt="Educational Assistance Header">
+    </header>
+
+    <article class="p-5">        
+        <p class="ps-2 border-s-2 font-bold border-green-500 text-stone-900 text-xl sm:text-2xl md:text-3xl">Qualification/s</p>
+        <ul class="pt-5 mb-8 ps-8 flex flex-col gap-4 list-decimal">
+            <li>Parents must be a resident and/or registered voter of this municipality. <strong>(Labo)</strong></li>
+            <li>For High School students must be enrolled in any institution here in Labo, Camarines Norte while for College Students must be enrolled or will enroll in any institution within the province of Camarines Norte</li>
+            <li>With Good Moral Character</li>
+            <li>Must be a member of Indigent Family but not a beneficiary of 4Ps</li>
+            <li>With at least 80 GWA.</li>
+        </ul>
+
+        <p class="ps-2 border-s-2 font-bold border-green-500 text-stone-900 text-xl sm:text-2xl md:text-3xl">Requirement/s</p>
+        <ul class="pt-5 ps-8 flex flex-col gap-4 list-decimal">
+            <li>COG or Photocopy of the Report Card <strong>(Last School Attended)</strong></li>
+            <li>Barangay Residency <strong>(Respective Barangay)</strong></li>
+            <li>Photocopy of Parent/Guardian’s Income Tax Return <strong>(BIR Talisay)</strong></li>
+            <li>Certificate of Good Moral Character <strong>(School Last Attended)</strong></li>
+            <li>Affidavit of Non-4Ps Beneficiary <strong>(Human Resource Management Office, Municipal Building)</strong></li>
+        </ul>
+    </article>
+
+    <div class="w-full flex flex-col pt-10 justify-center items-center">
+        <p class="font-bold text-lg sm:text-xl text-center lg:text-3xl px-5">HIGH SCHOOL STUDENTS ARE ELIGIBLE ONE PER SCHOOL YEAR</p>
+        <div class="border-b-2 border-green-500 w-[60%] mt-4"></div>
+    </div>
+
+    <div class="mt-5 py-14 sm:py-20 flex justify-center items-center bg-cover bg-center bg-no-repeat" style="background-image: url('{% static 'applicant/images/header.png' %}');">
+        <p class="text-lg sm:text-3xl md:text-5xl text-amber-50 font-bold drop-shadow-lg">Fill Up the Applicant Information</p>
+    </div>  
+
+    <section class="p-5">
+        <form action="" id="form" method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- NAME ROW -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        First Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="fname" value="{{ fName|default_if_none:'' }}" placeholder="John Jester"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.fName or errors.datas %}border-red-500{% endif %}" />
+                               {% if errors.datas %}<p class="mt-1 text-sm text-red-600">{{ errors.datas }}</p>{% endif %}
+                    {% if errors.fName %}<p class="mt-1 text-sm text-red-600">{{ errors.fName }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+                    <input type="text" name="mname" value="{{ mName|default_if_none:'' }}" placeholder="Hagupit"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.mName %}border-red-500{% endif %}" />
+                    {% if errors.mName %}<p class="mt-1 text-sm text-red-600">{{ errors.mName }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Last Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="lname" value="{{ lName|default_if_none:'' }}" placeholder="Salen"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.lName or errors.datas %}border-red-500{% endif %}" />
+                    {% if errors.datas %}<p class="mt-1 text-sm text-red-600">{{ errors.datas }}</p>{% endif %}
+                           {% if errors.lName %}<p class="mt-1 text-sm text-red-600">{{ errors.lName }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- EMAIL & CONTACT & 4PS ROW -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" id="email" value="{{ email|default_if_none:'' }}" placeholder="johndoe@gmail.com"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.email %}border-red-500{% endif %}" />
+                    {% if errors.email %}<p class="mt-1 text-sm text-red-600">{{ errors.email }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact No. <span class="text-red-500">*</span></label>
+                    <input type="tel" name="contact" value="{{ contact|default_if_none:'' }}" placeholder="09xxxxxxxxx"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.contact %}border-red-500{% endif %}" />
+                    {% if errors.contact %}<p class="mt-1 text-sm text-red-600">{{ errors.contact }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">4Ps Beneficiary <span class="text-red-500">*</span></label>
+                    <select name="is_four" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.is_four %}border-red-500{% endif %}">
+                        <option value="" disabled {% if not is_four %}selected{% endif %}>Select</option>
+                        <option value="1" {% if is_four == "1" %}selected{% endif %}>Yes</option>
+                        <option value="0" {% if is_four == "0" %}selected{% endif %}>No</option>
+                    </select>
+                    {% if errors.is_four %}<p class="mt-1 text-sm text-red-600">{{ errors.is_four }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- GRADE & SCHOOL ROW -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Year/Grade <span class="text-red-500">*</span></label>
+                    <input type="text" name="grade" value="{{ grade|default_if_none:'' }}" placeholder="Grade 8, Grade 12-STEM, 1st Year BSCS"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.grade %}border-red-500{% endif %}" />
+                    {% if errors.grade %}<p class="mt-1 text-sm text-red-600">{{ errors.grade }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">School <span class="text-red-500">*</span></label>
+                    <input type="text" name="school" value="{{ school|default_if_none:'' }}" placeholder="Mabini Colleges"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.school %}border-red-500{% endif %}" />
+                    {% if errors.school %}<p class="mt-1 text-sm text-red-600">{{ errors.school }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address <span class="text-red-500">*</span></label>
+                <textarea name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.address %}border-red-500{% endif %}">{{ address|default_if_none:'' }}</textarea>
+                {% if errors.address %}<p class="mt-1 text-sm text-red-600">{{ errors.address }}</p>{% endif %}
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="text-center">
+                <button type="submit" id="submit-btn"
+                        class="px-6 py-3 bg-green-500 text-white font-semibold rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    SUBMIT APPLICATION
+                </button>
+            </div>
+        </form>
+    </section>
+    <div class="pb-5 pt-5 ">
+        <p class="text-stone-400 text-sm text-center">© 2025 Municipal of Labo - All Rights Reserved.</p>
+    </div>
+</main>
+
+<!-- Confirmation Modal -->
+<dialog id="confirm-modal" class="modal backdrop:bg-black/50">
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <h3 class="text-lg font-bold mb-4">Confirm Your Application</h3>
+        <div id="modal-content" class="space-y-4 text-sm">
+            <!-- Content will be filled dynamically by JS -->
+        </div>
+        <div class="modal-action mt-6">
+            <form method="dialog">
+                <button class="btn btn-ghost">Cancel</button>
+            </form>
+            <button id="confirm-submit" class="btn btn-success">Confirm & Submit</button>
+        </div>
+    </div>
+</dialog>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('form');
+        const modal = document.getElementById('confirm-modal');
+        const modalContent = document.getElementById('modal-content');
+        const confirmSubmitBtn = document.getElementById('confirm-submit');
+           const errorAlert = document.getElementById('error-alert-container');
+      
+ // --- Alert Fading Logic ---
+        if (errorAlert) {
+            // Wait for 3 seconds before starting the fade
+            setTimeout(() => {
+                // Start the CSS transition (opacity-100 -> opacity-0)
+                errorAlert.classList.remove('opacity-100');
+                errorAlert.classList.add('opacity-0');
+
+                // Wait for the transition duration (1000ms or 1 second) before removing the element entirely
+                setTimeout(() => {
+                    errorAlert.remove();
+                }, 1000);
+            }, 3000); // 3000ms = 3 seconds delay
+        }
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent immediate submission
+
+            // Populate modal with form data for review
+            modalContent.innerHTML = `
+                <p><strong>Name:</strong> ${form.fname.value} ${form.mname.value || ''} ${form.lname.value}</p>
+                <p><strong>Email:</strong> ${form.email.value}</p>
+                <p><strong>Contact:</strong> ${form.contact.value}</p>
+                <p><strong>4Ps Beneficiary:</strong> ${form.is_four.value === '1' ? 'Yes' : 'No'}</p>
+                <p><strong>Year/Grade:</strong> ${form.grade.value}</p>
+                <p><strong>School:</strong> ${form.school.value}</p>
+                <p><strong>Address:</strong> ${form.address.value}</p>
+            `;
+
+            modal.showModal();
+        });
+
+        // Confirm submission
+        confirmSubmitBtn.addEventListener('click', function () {
+            form.submit(); // Now actually submit the form
+        });
+    });
+</script>
+{% endblock %}
