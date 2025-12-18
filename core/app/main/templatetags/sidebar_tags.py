@@ -61,7 +61,12 @@ def check_event(context):
     if user.is_superuser:
         return True
         
-
+@register.simple_tag(takes_context=True)
+def is_super(context):
+   
+        return "Not Jester"
+        
+        
 @register.simple_tag(takes_context=True)
 def check_employee(context):
     user = context['request'].user
@@ -72,3 +77,13 @@ def check_employee(context):
         if employee.role == "admin":
             return True
 
+
+@register.simple_tag(takes_context=True)
+def check_if_hrmo(context):
+    user = context['request'].user
+    if user.is_superuser:
+        return True
+    else:
+        employee = Employee.objects.select_related('department').get(user=user)
+        if employee.department.abbreviation == "HRMO":
+            return True

@@ -25,19 +25,17 @@ def create(request):
 
     # **1. DATE CHECK**
     if not active_period or not (active_period.open_date <= current_date <= active_period.close_date):
-        return render(request, "applicant/index.html", {"display": "closed"})
+        return render(request, "applicant/applicant.html", {"display": "closed"})
 
     # **2. APPLICATION LIMIT CHECK (ALWAYS FRESH)**
     max_applicant = Limit.objects.get(id=1).limit_number
         # **CRITICAL: CHECK IF SLOTS FULL NOW**
-    if total_apps >= max_applicant:
-        return render(request, "applicant/index.html", {"display": "full", "count": total_apps})
 
     # **3. FORM HANDLING**
     if request.method == 'POST':
         return _handle_post(request, active_period)
     else:
-        return render(request, "applicant/index.html", {
+        return render(request, "applicant/applicant.html", {
             "display": "open", 
             "count": total_apps
         })
@@ -50,11 +48,7 @@ def _handle_post(request, active_period):
     total_apps = Applicants.objects.count()
     max_applicant = Limit.objects.get(id=1).limit_number
         # **CRITICAL: CHECK IF SLOTS FULL NOW**
-    if total_apps >= max_applicant:
-        return render(request, "applicant/index.html", {
-            "display": "full", 
-            "count": total_apps
-        })
+
 
     # Extract form data
     form_data = {
@@ -66,6 +60,7 @@ def _handle_post(request, active_period):
         'grade': request.POST.get("grade", "").strip(),
         'school': request.POST.get("school", "").strip(),
         'address': request.POST.get("address", "").strip(),
+        'is_four': request.POST.get("is_four", "").strip(),
     }
     
     # Validation
@@ -77,7 +72,7 @@ def _handle_post(request, active_period):
     
     # Errors
     if errors:
-        return render(request, "applicant/index.html", {
+        return render(request, "applicant/applicant.html", {
             "display": "open",
             "count": total_apps,
             **form_data,
@@ -105,6 +100,7 @@ def _validate_form(form_data):
     if not form_data['grade']: errors["grade"] = "Grade/Level is Required."
     if not form_data['school']: errors["school"] = "School Name is Required."
     if not form_data['address']: errors["address"] = "Address is Required."
+    if not form_data['is_four']: errors["is_four"] = "Please Select a Value."
     
     return errors
 
@@ -136,6 +132,9 @@ def _save_and_check_slots(request, form_data, active_period):
     try:
         with transaction.atomic():
             # CREATE APPLICANT
+            school_id = Applicants.objects.count()
+            year = timezone.now().year
+            school = f"{year}00{school_id+1}"
             applicant = Applicants.objects.create(
                 first_name=form_data['fName'],
                 middle_name=form_data['mName'],
@@ -144,20 +143,15 @@ def _save_and_check_slots(request, form_data, active_period):
                 contact=form_data['contact'],
                 grade=form_data['grade'],
                 school=form_data['school'],
-                address=form_data['address']
+                address=form_data['address'],
+                is_four = form_data['is_four'],
+                scholar_id = school 
             )
         
         # **FRESH COUNT AFTER SAVE**
         total_apps = Applicants.objects.count()
         max_applicant = Limit.objects.get(id=1).limit_number
-        # **CRITICAL: CHECK IF SLOTS FULL NOW**
-        if total_apps >= max_applicant:
-            # REDIRECT TO FULL PAGE
-            return render(request, "applicant/index.html", {
-                "display": "full",
-                "count": total_apps
-            })
-        
+
         # **SUCCESS - SHOW SUCCESS IN SAME PAGE**
         context = {
             'display': 'open',
@@ -169,17 +163,34 @@ def _save_and_check_slots(request, form_data, active_period):
             'count': total_apps,
             'open_date': active_period.open_date,
             'close_date': active_period.close_date,
+            "first_name":"",
+            "middle_name":"",
+            "last_name":"",
+            "email":"",
+            "contact":"",
+            "grade":"",
+            "school":"",
+            "address":"",
+            "is_four":""
         }
-        return render(request, "applicant/index.html", context)
+        return redirect("education:receipt",id=school)
         
     except Exception as e:
         print(f"Error: {e}")
         total_apps = Applicants.objects.count()
         errors = {"general": "An error occurred. Please try again."}
-        return render(request, "applicant/index.html", {
+        return render(request, "applicant/applicant.html", {
             "display": "open",
             "count": total_apps,
             **form_data,
             "errors": errors
         })
 
+
+
+def receipt(request,id):
+    app = Applicants.objects.get(scholar_id=id)
+    context = {
+        "data":app
+    }
+    return render(request,"applicant/receipt.html",context)

@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Applicants(models.Model):
+    scholar_id = models.CharField(max_length=250,null=True)
     last_name = models.CharField(max_length=75)
     first_name = models.CharField(max_length=75)
     middle_name = models.CharField(max_length=75)

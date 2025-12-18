@@ -128,7 +128,7 @@
             <div class="alert alert-danger">{{ errors.datas }}</div>
           {% endif %}
 
-          <form action="" method="post">
+          <form action="" id="form" method="post">
             {% csrf_token %}
 
             <!-- NAME ROW -->
@@ -142,7 +142,7 @@
                   class="form-control {% if errors.fName %}is-invalid{% endif %}"
                   name="fname"
                   value="{{ fName|default_if_none:'' }}"
-                  placeholder="John"
+                  placeholder="John Jester"
                 />
                 {% if errors.fName %}
                 <div class="invalid-feedback d-block">{{ errors.fName }}</div>
@@ -156,7 +156,7 @@
                   class="form-control {% if errors.mName %}is-invalid{% endif %}"
                   name="mname"
                   value="{{ mName|default_if_none:'' }}"
-                  placeholder="Name"
+                  placeholder="Hagupit"
                 />
                 {% if errors.mName %}
                 <div class="invalid-feedback d-block">{{ errors.mName }}</div>
@@ -172,7 +172,7 @@
                   class="form-control {% if errors.lName %}is-invalid{% endif %}"
                   name="lname"
                   value="{{ lName|default_if_none:'' }}"
-                  placeholder="Doe"
+                  placeholder="Salen"
                 />
                 {% if errors.lName %}
                 <div class="invalid-feedback d-block">{{ errors.lName }}</div>
@@ -182,7 +182,7 @@
 
             <!-- EMAIL & CONTACT ROW -->
             <div class="row g-3 mb-4">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label class="form-label"
                   >Email <span class="text-danger">*</span></label
                 >
@@ -190,6 +190,7 @@
                   type="email"
                   class="form-control {% if errors.email %}is-invalid{% endif %}"
                   name="email"
+                  id="email"
                   value="{{ email|default_if_none:'' }}"
                   placeholder="johndoe@gmail.com"
                 />
@@ -198,7 +199,7 @@
                 {% endif %}
               </div>
 
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label class="form-label"
                   >Contact No. <span class="text-danger">*</span></label
                 >
@@ -211,6 +212,27 @@
                 />
                 {% if errors.contact %}
                 <div class="invalid-feedback d-block">{{ errors.contact }}</div>
+                {% endif %}
+              </div>
+               <div class="col-md-4">
+                <label class="form-label"
+                  >4ps Beneficiary <span class="text-danger">*</span></label
+                >
+                <select name="is_four" class="form-control {% if errors.is_four %}is-invalid{% endif %}">
+                  <option disabled selected>Select</option>
+                  <option 
+                     value="1"
+                     {% if is_four == 1 %} selected {% endif %}
+                  
+                     >Yes</option>
+                  <option
+                 
+                  value="0"
+                   {% if  is_four == 2 %} selected {% endif %}
+                   >No</option>
+                </select>
+                {% if errors.is_four %}
+                <div class="invalid-feedback d-block">{{ errors.is_four }}</div>
                 {% endif %}
               </div>
             </div>
@@ -242,7 +264,7 @@
                   class="form-control {% if errors.school %}is-invalid{% endif %}"
                   name="school"
                   value="{{ school|default_if_none:'' }}"
-                  placeholder="School Name"
+                  placeholder="Mabini Colleges"
                 />
                 {% if errors.school %}
                 <div class="invalid-feedback d-block">{{ errors.school }}</div>
@@ -311,7 +333,7 @@
     <div class="container-fluid m-0 border py-3 border border-secondary border-start-0 border-end-0 border-bottom-0 d-flex align-items-center justify-content-center">
       <p class="text-secondary p-0 m-0 text-center">© 2025  Municipal of Labo - All Rights Reserved.</p>
     </div>
-
+  
     <!-- BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -323,6 +345,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const successMsg = document.getElementById('successMessage').textContent;
+    
     Swal.fire({
         icon: "success",
         title: " Application Submitted!",
@@ -341,6 +364,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }).then((result) => {
         // Auto-clear form for next submission
+       document.getElementById("fName").value = "";
+       document.getElementById("mName").value = "";
+       document.getElementById("lName").value = "";
+       document.getElementById("email").value = "";
+       document.getElementById("contact").value = "";
+       document.getElementById("grade").value = "";
+       document.getElementById("school").value = "";
+       document.getElementById("address").value = "";
         document.querySelector('form').reset();
         window.location.reload();
     });

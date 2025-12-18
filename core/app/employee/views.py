@@ -65,8 +65,6 @@ def parse_date(date_str):
         
 @login_required
 def create(request):
-    year = datetime.datetime.now().year
-    emp = Employee.objects.last()
     emp_id = generate_employee_id()
 
 

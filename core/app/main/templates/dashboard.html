@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
-{% load static %}
 
+{% load static %}
 {% block title %}
   LGU Admin Dashboard - Bayan ng Labo
 {% endblock %}
 
 {% block main %}
+  {% load dashboard_tags %}
+  {% is_admin as isAdmin %}
+
   <div class="drawer lg:drawer-open bg-stone-100">
     <input id="sidebar" type="checkbox" class="drawer-toggle" />
-
     <!-- MOBILE TOP BAR -->
     <div class="drawer-content flex flex-col">
       {% include 'navbar.html' %}
@@ -20,16 +22,25 @@
         <!-- STATS CARDS -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <div class="stat bg-base-100 shadow-xl rounded-box">
-            <div class="stat-title">Total Residents</div>
-            <div class="stat-value text-primary">48,521</div>
-            <div class="stat-desc">↑ 2.1% from last month</div>
+            <div class="stat-title">Total Employee</div>
+            
+          <div class="flex">
+              <i class="fas fa-users"></i>  
+              <div class="stat-value text-primary">{{ employee }}</div>
           </div>
-          <div class="stat bg-base-100 shadow-xl rounded-box">
-            <div class="stat-title">Business Permits</div>
-            <div class="stat-value text-secondary">1,284</div>
-            <div class="stat-desc">Active this year</div>
           </div>
+
           <div class="stat bg-base-100 shadow-xl rounded-box">
+            <div class="stat-title">Total Scholar Applicants</div>
+            <div class="stat-value text-secondary">{{ education }}</div>
+          </div>
+
+          <div class="stat bg-base-100 shadow-xl rounded-box">
+            <div class="stat-title">Total Procurements</div>
+            <div class="stat-value text-secondary">{{ procurement }}</div>
+          </div>
+
+          {% comment %} <div class="stat bg-base-100 shadow-xl rounded-box">
             <div class="stat-title">Revenue</div>
             <div class="stat-value text-success">₱42.8M</div>
             <div class="stat-desc">+12% vs target</div>
@@ -40,11 +51,11 @@
             <div class="stat-actions">
               <button class="btn btn-sm btn-warning">View</button>
             </div>
-          </div>
+          </div> {% endcomment %}
         </div>
 
         <!-- RECENT ACTIVITY -->
-        <div class="card bg-base-100 shadow-xl">
+        {% comment %} <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title">Recent Transactions</h2>
             <div class="overflow-x-auto">
@@ -86,10 +97,12 @@
               </table>
             </div>
           </div>
-        </div>
+        </div> {% endcomment %}
       </div>
     </div>
 
-    {% include 'sidebar.html' %}
+    {% block sidebar %}
+      {% include 'sidebar.html' %}
+    {% endblock %}
   </div>
 {% endblock %}

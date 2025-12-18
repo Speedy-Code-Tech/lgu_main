@@ -2,10 +2,12 @@
 {% load sidebar_tags %}
 {% check_role as user_role %}
 {% check_if_gso as is_gso %}
+{% check_if_hrmo as is_hrmo %}
 {% check_education as education %}
 {% check_event as event %}
 {% check_employee as employee %}
 {% load static %}
+{% block sidebar %}
 <div class="drawer-side z-50">
   <label for="sidebar" class="drawer-overlay"></label>
   
@@ -50,7 +52,8 @@
     </li>
 
     {% endif %}
-    {% if education %}
+  
+    {% if education or is_hrmo %}
 
     <li class="text-md">
       <a href="{% url 'education:view' %}" class="{% if active == 'education' %}bg-green-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} rounded-lg">
@@ -88,3 +91,4 @@
     </div>
   </ul>
 </div>
+{% endblock %}
