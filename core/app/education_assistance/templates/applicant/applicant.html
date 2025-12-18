@@ -44,10 +44,14 @@
         <div class="border-b-2 border-green-500 w-[60%] mt-4"></div>
     </div>
 
-    <div class="mt-5 py-14 sm:py-20 flex justify-center items-center bg-cover bg-center bg-no-repeat" style="background-image: url('{% static 'applicant/images/header.png' %}');">
+
+
+    {% if display == 'open' %}
+        
+    
+            <div class="mt-5 py-14 sm:py-20 flex justify-center items-center bg-cover bg-center bg-no-repeat" style="background-image: url('{% static 'applicant/images/header.png' %}');">
         <p class="text-lg sm:text-3xl md:text-5xl text-amber-50 font-bold drop-shadow-lg">Fill Up the Applicant Information</p>
     </div>  
-
     <section class="p-5">
         <form action="" id="form" method="post" novalidate>
             {% csrf_token %}
@@ -142,6 +146,11 @@
             </div>
         </form>
     </section>
+    {% else %}
+   <header class="w-full pt-5">
+        <img src="{% static 'applicant/images/close.png' %}" class="w-full" alt="Educational Assistance Header">
+    </header>
+    {% endif %}
     <div class="pb-5 pt-5 ">
         <p class="text-stone-400 text-sm text-center">© 2025 Municipal of Labo - All Rights Reserved.</p>
     </div>
