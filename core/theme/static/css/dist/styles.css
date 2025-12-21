@@ -5102,6 +5102,18 @@
     }
   }
 }
+html {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: light;
+  }
+}
+body {
+  background-color: var(--color-white);
+  color: var(--color-black);
+}
 @layer base {
   :where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] {
     color-scheme: light;

@@ -1,8 +1,12 @@
 module.exports = {
+  darkMode: false,
   plugins: {
     "@tailwindcss/postcss": {},
     "postcss-simple-vars": {},
-    "postcss-nested": {}
+    "postcss-nested": {},
   },
-  darkMode:false
-}
+  daisyui: {
+    themes: ["light", "dark"], // Or true/false depending on version
+    darkTheme: "light",
+  },
+};
