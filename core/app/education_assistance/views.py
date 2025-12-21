@@ -5,16 +5,34 @@ from django.utils import timezone
 from django.db import transaction
 from .models import Applicants, DataEntryPeriod,Limit
 from app.main.models import Barangay
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib import messages 
+from app.employee.models import Employee
 # Create your views here.
+
+def is_hrmo(user):
+    # print(user.id)
+    if user.is_superuser:
+        return True
+    
+    role = Employee.objects.select_related("department").get(user_id = user.id)
+    
+    if role.department.abbreviation == 'MHRMO':
+        return True
+    
+   
+    return False
+
 @login_required
+@user_passes_test(is_hrmo,login_url='/')
+
 def view(request):
     applicant = Applicants.objects.all()      
     return render(request,'view_admin.html',{"active":'education',"applicants":applicant})
 
 
 @login_required
+@user_passes_test(is_hrmo,login_url='/')
 def store(request):
     brgys = Barangay.objects.all()      
       # **ALWAYS FRESH CHECKS - RUN EVERY TIME**

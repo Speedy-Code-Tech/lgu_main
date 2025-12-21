@@ -3,9 +3,24 @@ from django.contrib import messages
 
 from app.employee.models import Employee,Department
 from .models import type_of_good,Mode,Procurement
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 # Create your views here.
+
+def is_gso(user):
+    # print(user.id)
+   
+    if user.is_superuser:
+        return True
+
+    role = Employee.objects.select_related("department").get(user_id = user.id)
+    if role.department.abbreviation == 'MGSO':
+        return True
+    
+   
+    return False
+
 @login_required
+@user_passes_test(is_gso,login_url='/')
 def index(request):
     context = {"active":'procurement',
                "procurements":Procurement.objects.filter(is_deleted=False).select_related('person_responsible',      # ← Employee
@@ -31,6 +46,7 @@ def clean_date(date_str):
     return date_str if date_str else None
 
 @login_required
+@user_passes_test(is_gso,login_url='/')
 def create(request):
     # Always load these for the form
     context = {
@@ -131,6 +147,7 @@ def create(request):
 
 
 @login_required
+@user_passes_test(is_gso,login_url='/')
 def delete(request,id):
     try:
 
@@ -147,6 +164,7 @@ def delete(request,id):
         
 
 @login_required
+@user_passes_test(is_gso,login_url='/')
 def view(request,id):
     
     context = {"active":'procurement',
@@ -163,6 +181,7 @@ def view(request,id):
 
 
 @login_required
+@user_passes_test(is_gso,login_url='/')
 def edit(request, id):
     pr = get_object_or_404(Procurement, id=id)
 

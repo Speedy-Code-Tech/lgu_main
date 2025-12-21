@@ -5,7 +5,7 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -14,7 +14,22 @@ from .models import Position
 from .models import Employee
 
 # Create your views here.
+def is_admin(user):
+    # print(user.id)
+    
+    if user.is_superuser:
+        return True
+
+    role = Employee.objects.get(user_id = user.id).role    
+    if role == 'admin':
+        return True
+    
+   
+    return False
+    # return user.groups.filter(name='HR').exists()
+
 @login_required
+@user_passes_test(is_admin,login_url='/')
 def index(request):
    
                 
@@ -64,6 +79,7 @@ def parse_date(date_str):
     return None
         
 @login_required
+@user_passes_test(is_admin,login_url='/')
 def create(request):
     emp_id = generate_employee_id()
 
@@ -212,6 +228,7 @@ def create(request):
     return render(request, 'employee/create.html', context)
 
 @login_required
+@user_passes_test(is_admin,login_url='/')
 def show(request,id):
     context = {
         'active':"employee",
@@ -224,6 +241,7 @@ def show(request,id):
     return render(request,'employee/show.html',context)
 
 @login_required
+@user_passes_test(is_admin,login_url='/')
 def destroy(request):
     id = request.POST.get("id")
     print(f"ID: {id}")
@@ -241,6 +259,7 @@ def destroy(request):
 
 
 @login_required
+@user_passes_test(is_admin,login_url='/')
 def edit(request, id):
     # GET THE ACTUAL EMPLOYEE BY ID
     employee = get_object_or_404(Employee, id=id)
