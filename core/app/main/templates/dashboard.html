@@ -8,6 +8,8 @@
 {% block main %}
   {% load dashboard_tags %}
   {% is_admin as isAdmin %}
+  {% check_if_hrmo as isHRMO %}
+  {% check_if_gso as isGSO %}
 
   <div class="drawer lg:drawer-open bg-stone-100">
     <input id="sidebar" type="checkbox" class="drawer-toggle" />
@@ -17,28 +19,42 @@
 
       <!-- MAIN CONTENT -->
       <div class="p-6">
-        <h1 class="text-4xl font-bold mb-8">Welcome back, <span class="text-primary">{{ name }}</span></h1>
+        <h1 class="text-4xl font-bold mb-8">Welcome back, <span class="text-green-500">{{ name }}</span></h1>
 
         <!-- STATS CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div class="stat bg-base-100 shadow-xl rounded-box">
-            <div class="stat-title">Total Employee</div>
-            
-          <div class="flex">
-              <i class="fas fa-users"></i>  
-              <div class="stat-value text-primary">{{ employee }}</div>
-          </div>
-          </div>
-
-          <div class="stat bg-base-100 shadow-xl rounded-box">
-            <div class="stat-title">Total Scholar Applicants</div>
-            <div class="stat-value text-secondary">{{ education }}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div class="w-full flex stat bg-base-100 shadow-xl rounded-box">
+            <div class="w-1/3 flex items-center justify-center">
+              <i class="fas fa-users text-4xl text-green-500"></i>
+            </div>
+            <div class="w-full">
+              <div class="stat-title ps-4 w-full text-end">Total Employee</div>
+              <div class="stat-value w-full text-end">{{ employee }}</div>
+            </div>
           </div>
 
-          <div class="stat bg-base-100 shadow-xl rounded-box">
-            <div class="stat-title">Total Procurements</div>
-            <div class="stat-value text-secondary">{{ procurement }}</div>
-          </div>
+          {% if isAdmin or isHRMO %}
+            <div class="w-full     flex stat bg-base-100 shadow-xl rounded-box">
+              <div class="w-1/3 flex items-center justify-center">
+                <i class="fas fa-book text-4xl text-green-500"></i>
+              </div>
+              <div class="w-full">
+                <div class="stat-title ps-4 w-full text-end">Total Scholar Applicants</div>
+                <div class="stat-value w-full text-end">{{ education }}</div>
+              </div>
+            </div>
+          {% endif %}
+          {% if isAdmin or isGSO %}
+            <div class="w-full flex stat bg-base-100 shadow-xl rounded-box">
+              <div class="w-1/3 flex items-center justify-center">
+                <i class="fas fa-money-bill text-4xl text-green-500"></i>
+              </div>
+              <div class="w-full">
+                <div class="stat-title ps-4 w-full text-end">Total Procurement</div>
+                <div class="stat-value w-full text-end">{{ procurement }}</div>
+              </div>
+            </div>
+          {% endif %}
 
           {% comment %} <div class="stat bg-base-100 shadow-xl rounded-box">
             <div class="stat-title">Revenue</div>

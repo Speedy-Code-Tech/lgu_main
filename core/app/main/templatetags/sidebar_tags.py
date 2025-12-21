@@ -85,5 +85,5 @@ def check_if_hrmo(context):
         return True
     else:
         employee = Employee.objects.select_related('department').get(user=user)
-        if employee.department.abbreviation == "HRMO":
+        if employee.department.abbreviation == "MHRMO":
             return True

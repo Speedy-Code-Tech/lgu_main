@@ -18,7 +18,7 @@ def dashboard(request):
 
     if is_super:
         # Superuser sees all employees with department info
-        employees = Employee.objects.select_related('department').all()
+        employees = Employee.objects.select_related('department').exclude(stat = "Deleted").all()
         employee_count = employees.count()
     else:
         try:
@@ -26,8 +26,9 @@ def dashboard(request):
             if employee_obj.department.abbreviation in ["MGSO", "HRMO"]:
                 # For MGSO/HRMO, count employees in that department
                 employee_count = Employee.objects.filter(
-                    department=employee_obj.department
-                ).count()
+                    department=employee_obj.department,
+                    
+                ).exclude(stat = "Deleted").count()
             else:
                 # Otherwise just show the single employee
                 employee_count = 1

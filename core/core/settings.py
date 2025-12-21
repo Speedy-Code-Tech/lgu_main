@@ -95,7 +95,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'lgu_main_system',
         'USER': 'root',
-        'PASSWORD': 'P@55word',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306', 
     }

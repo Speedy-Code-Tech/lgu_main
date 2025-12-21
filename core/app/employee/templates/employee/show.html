@@ -32,12 +32,15 @@
                 <div class="w-full sm:w-[25%] flex justify-center">
 
                   <div id="profile-preview" class="w-[250px] flex flex-col justify-center items-center">
-  <!-- Preview Image (starts with default photo) -->
-  <img src="{{ emp.profile_picture.url }}"
-       id="preview-img"
-       class="w-[230px] h-[230px] object-cover border-4 border-gray-300 shadow-lg transition-all"
-       alt="Profile Preview">
-
+                    {% if employee.profile_picture  %}
+                    <img src="{{ employee.profile_picture.url }}" 
+     alt="Profile picture"
+         class="w-[230px] h-[230px] object-cover border-4 border-gray-300 shadow-lg transition-all"/>
+         {% else %}
+         <img src="{% static 'employee/images/profile.jpg' %}"
+        alt="Profile picture"
+         class="w-[230px] h-[230px] object-cover border-4 border-gray-300 shadow-lg transition-all"/>
+{% endif %}
   <!-- File Input (NEVER gets replaced!) -->
   <div class="mt-4 text-center">
    
@@ -105,7 +108,16 @@
                       <legend class="fieldset-legend pb-0 text-lg">Place of Birth</legend>
                       <input type="text" readonly value="{{ emp.place_of_birth|default:'' }}" name="place_of_birth" class="input w-full {% if error.place_of_birth.msg %} input-error {% endif %}" placeholder="Salen" />
                     </fieldset>
-                  
+                    <fieldset class="w-full fieldset">
+                      <legend class="fieldset-legend pb-0 text-lg">Role</legend>
+                      <p class="input">
+                        {% if  emp.role == "user"%}User{% endif %}
+                 
+                        {% if  emp.role == "admin"%}Admin{% endif %}
+                           
+                      </p>
+                      <span class="font-semibold text-error">{{error.email.msg}}</span>
+                    </fieldset>
                 
                   </div>
                   {% comment %}END LASTNAME GENDER CIVIL STATUS{% endcomment %}
@@ -120,20 +132,7 @@
                       <input readonly value="{{ emp.email|default:'' }}" type="email" name="email" class="input w-full {% if error.email.msg %} input-error {% endif %}" placeholder="H*********n@gmail.com" />
                   <span class="font-semibold text-error">{{error.email.msg}}</span>
                     </fieldset>
-                   <fieldset class="w-full fieldset">
-                      <legend class="fieldset-legend pb-0 text-lg">Role</legend>
-                      <select name="role" id="role" class="select w-full {% if error.role.msg %} input-error {% endif %}">
-                        <option value="" disabled selected>Select</option>
-                        <option 
-                        {% if  emp.role == "user"%}selected{% endif %}
-                           value="user">User</option>
                  
-                        <option 
-                        {% if  emp.role == "admin"%}selected{% endif %}
-                           value="admin">Admin</option>
-                      </select>
-                      <span class="font-semibold text-error">{{error.email.msg}}</span>
-                    </fieldset>
                   </div>
                   <div class="w-full flex flex-col justify-evenly gap-3 sm:flex-row">
                       <fieldset class="w-full fieldset">
@@ -141,6 +140,7 @@
                       <input readonly value="{{ emp.address|default:'' }}" type="text" name="address" class="input w-full {% if error.address.msg %} input-error {% endif %}" placeholder="Purok 4, Brgy. Labo Camarines Norte" />
                   <span class="font-semibold text-error">{{error.address.msg}}</span>
                     </fieldset>
+                    
                   </div>
                   {% comment %}END MOBILE EMAIL ADDRESS{% endcomment %}
                 </div>
@@ -193,14 +193,13 @@
                       <legend class="fieldset-legend pb-0 text-lg">Department</legend>
                     
                       <p name="department" id="" class="input w-full {% if error.department.msg %} input-error {% endif %}">
+             
                         {% for department in  departments %}
-                          <option value="{{department.id}}"
-                          {% if emp.department_id == department.id %}
-                          selected
-                        {% endif %}
-                          >{{department.name}}</option>
+                      
+                            {% if emp.department_id == department.id %}
+                              {{department.name}}
+                            {% endif %}
                         {% endfor %}
-                          
                       </p>
              <span class="font-semibold text-error">{{error.department.msg}}</span>
                     </fieldset>
@@ -218,7 +217,7 @@
                     </fieldset>
                     <fieldset class="w-full fieldset">
                        
-                      <legend class="fieldset-legend pb-0 text-lg">Employment Status</legend>
+                      <legend class="fieldset-legend pb-0 text-lg">Status</legend>
                       <p name=employement_status" id="" class="input w-full">
                          {{emp.employment_status}}
                                             </p>

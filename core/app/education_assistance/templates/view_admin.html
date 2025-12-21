@@ -5,7 +5,14 @@
   LGU Admin Education - Bayan ng Labo
 {% endblock %}
 
+{% block extrahead %}
+  <!-- DataTables Buttons CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+{% endblock %}
+
 {% block main %}
+  {% load checkRoles %}
+  {% isAdmin as is_Admin %}
   <div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
     <input id="sidebar" type="checkbox" class="drawer-toggle" />
 
@@ -22,7 +29,15 @@
         {% if messages %}
           <div class="px-4 md:px-6 mt-6">
             {% for message in messages %}
-              <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %} shadow-lg mb-3">
+              <div class="alert {% if message.tags == 'error' %}
+                  
+                  alert-error
+
+                {% else %}
+                  
+                  alert-success
+
+                {% endif %} shadow-lg mb-3">
                 <span>{{ message }}</span>
               </div>
             {% endfor %}
@@ -31,48 +46,139 @@
 
         <!-- Content -->
         <div class="p-4 md:p-6 lg:p-8">
-          <div class="bg-white lg:p-10 p-2  shadow-md rounded-lg overflow-hidden">
+          <div class="bg-white lg:p-10 p-2 shadow-md rounded-lg overflow-hidden">
             <!-- Add Button -->
             <div class="p-4 border-b border-gray-200 flex justify-between items-center flex-wrap gap-3">
               <h2 class="text-lg font-semibold text-gray-800">Education Assistance List</h2>
+              <div class="flex justify-center gap-3">
+                <button id="export-excel" class="btn btn-success"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                <button id="print-table" class="btn btn-accent hidden"><i class="fas fa-print"></i> Print</button>
+          
+                {% if is_Admin %}
+                  <a href="{% url 'education:create' %}" class="btn btn-info"><i class="fas fa-plus"></i> Add New</a>
+                {% endif %}
+              </div>
             </div>
 
             <!-- Table Container -->
             <div class="overflow-x-auto">
-              <table id="eventtable" class="table table-zebra w-full min-w-full">
-                <thead class="bg-gray-200 text-xs md:text-sm">
+              <!-- Enables horizontal scroll on small screens -->
+              <table id="educationtable" class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-200 text-xs md:text-sm uppercase tracking-wider">
                   <tr>
-                    <th class="text-center">No.</th>
-                    <th class="text-center">Last Name</th>
-                    <th class="text-center">First Name</th>
-                    <th class="text-center">Middle Name</th>
-                    <th class="text-center">Email</th>
-                    <th class="text-center">Contact</th>
-                    <th class="text-center">Grade</th>
-                    <th class="text-center">School</th>
-                    <th class="text-center">Address</th>
-        
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">No.</th>
+                    <th class="px-4 py-3 truncate text-center font-medium text-gray-700">Scholar ID</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Name</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Grade</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">School</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">4Ps</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Email</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Contact</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Address</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="text-xs md:text-sm">
-                {% for applicant in applicants %}
-                <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td>{{ applicant.last_name }}</td>
-                    <td>{{ applicant.first_name }}</td>
-                    <td>{{ applicant.middle_name }}</td>
-                    <td>{{ applicant.email }}</td>
-                    <td>{{ applicant.contact }}</td>
-                    <td>{{ applicant.grade }}</td>
-                    <td>{{ applicant.school }}</td>
-                    <td>{{ applicant.address }}</td>
-                </tr>
-                {% endfor %}
+                <tbody class="">
+                  {% for applicant in applicants %}
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ forloop.counter }}</td>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.scholar_id }}</td>
 
+                      <!-- Name: Allow wrapping on small screens, full on larger -->
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate">{{ applicant.full_name }}</div>
+                      </td>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.grade }}</td>
+                      <td class="px-4 py-3 max-w-[150px] truncate">{{ applicant.school }}</td>
+                      <td class="px-4 py-3 max-w-[150px] truncate">
+                        {% if applicant.is_four %}
+                          <span class="badge badge-success">YES</span>
+                        {% else %}
+                          <span class="badge badge-error">NO</span>
+                        {% endif %}
+                      </td>
+                      <!-- Email: Truncate with ellipsis to prevent overflow -->
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate" title="{{ applicant.email }}">{{ applicant.email }}</div>
+                      </td>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.contact }}</td>
+                      <td class="px-4 py-3 max-w-full truncate">{{ applicant.full_address }}</td>
+                      <td class="px-4 py-3">
+                        <div class="flex justify-center gap-3">
+                          <span class="text-error font-bold poppins">--ooo--</span>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              <table id="educationtable1" class="hidden min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-200 text-xs md:text-sm uppercase tracking-wider">
+                  <tr>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">No.</th>
+                    <th class="px-4 py-3 truncate text-center font-medium text-gray-700">Scholar ID</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Last Name</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">First Name</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Middle Name</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Name Ext.</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Grade</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">School</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">4Ps</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Email</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Contact</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Province/City</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Barangay</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Purok</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="">
+                  {% for applicant in applicants %}
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ forloop.counter }}</td>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.scholar_id }}</td>
+
+                      <!-- Name: Allow wrapping on small screens, full on larger -->
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate">{{ applicant.last_name }}</div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate">{{ applicant.first_name }}</div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate">{{ applicant.middle_name }}</div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate">{{ applicant.name_ext }}</div>
+                      </td>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.grade }}</td>
+                      <td class="px-4 py-3 max-w-[150px] truncate">{{ applicant.school }}</td>
+                      <td class="px-4 py-3 max-w-[150px] truncate">
+                        {% if applicant.is_four %}
+                          <span class="badge badge-success">YES</span>
+                        {% else %}
+                          <span class="badge badge-error">NO</span>
+                        {% endif %}
+                      </td>
+                      <!-- Email: Truncate with ellipsis to prevent overflow -->
+                      <td class="px-4 py-3">
+                        <div class="max-w-full truncate" title="{{ applicant.email }}">{{ applicant.email }}</div>
+                      </td>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.contact }}</td>
+                      <td class="px-4 py-3 max-w-full truncate">{{ applicant.province }}</td>
+                      <td class="px-4 py-3 max-w-full truncate">{{ applicant.brgy.name }}</td>
+                      <td class="px-4 py-3 max-w-full truncate">{{ applicant.purok }}</td>
+                      <td class="px-4 py-3">
+                        <div class="flex justify-center gap-3">
+                          <span class="text-error font-bold poppins">--ooo--</span>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
-
           </div>
         </div>
       </main>
@@ -83,5 +189,60 @@
 {% endblock %}
 
 {% block scripts %}
+  <!-- DataTables Buttons Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
 
+  <script>
+    $(document).ready(function () {
+      // Visible table: for on-screen viewing (combined name/address)
+      $('#educationtable').DataTable({
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100, 'All'],
+        order: [[1, 'asc']], // Sort by Name column
+        scrollX: true,
+        language: {
+          search: 'Search Scholar Applicant:',
+          lengthMenu: 'Show _MENU_ scholars',
+          info: 'Showing _START_ to _END_ of _TOTAL_ scholar applicants',
+          infoEmpty: 'No scholar applicants found',
+          zeroRecords: 'No matching records found',
+          paginate: {
+            next: 'Next',
+            previous: 'Previous'
+          }
+        }
+      })
+    
+      // Hidden table: ONLY for exporting detailed/separated data
+      var exportTable = $('#educationtable1').DataTable({
+        paging: false,
+        searching: false,
+        info: false,
+        ordering: false,
+        scrollX: false,
+        dom: 'B', // We still need 'B' to define buttons
+        buttons: [
+          {
+            extend: 'excelHtml5',
+            title: 'Education Assistance Applicants - Municipality of Labo, Camarines Norte',
+            filename: 'Education_Assistance_Applicants_Labo_' + new Date().toISOString().slice(0, 10),
+            exportOptions: {
+              columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] // All except Actions (last column)
+            }
+          }
+        ]
+      })
+    
+      // Hide the auto-generated button container completely
+      exportTable.buttons().container().hide()
+    
+      // Your custom top button triggers the hidden table's export
+      $('#export-excel').on('click', function () {
+        exportTable.buttons(0).trigger() // Trigger the first (and only) button
+      })
+    })
+  </script>
 {% endblock %}
