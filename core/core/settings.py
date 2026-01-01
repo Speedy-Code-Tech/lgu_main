@@ -11,10 +11,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-7iue1t1p937up2%dn_l*=o)z8@e49ntb3-r!%f*+a&m8944091'
 DEBUG = True
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
 
 dbPass = ""
 
+=======
+ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','labocamnorte.site','https://lgu.labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
+>>>>>>> a28f41a860c3ed9812cbd12dee6ba4534f7b239a
 CSRF_TRUSTED_ORIGINS = [
     'https://lgu.labocamnorte.site',
     'https://labocamnorte.site',
@@ -53,7 +57,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 # Tailwind config
 TAILWIND_APP_NAME = 'theme'
+<<<<<<< HEAD
 INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
+=======
+INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','labocamnorte.site','https://lgu.labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
+>>>>>>> a28f41a860c3ed9812cbd12dee6ba4534f7b239a
 
 # Middleware
 MIDDLEWARE = [
@@ -97,7 +105,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'lgu_main_system',
         'USER': 'root',
+<<<<<<< HEAD
         'PASSWORD': dbPass,
+=======
+        'PASSWORD': '',
+>>>>>>> a28f41a860c3ed9812cbd12dee6ba4534f7b239a
         'HOST': '127.0.0.1',
         'PORT': '3306', 
     }
@@ -118,12 +130,21 @@ USE_I18N = True
 USE_TZ = True
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+<<<<<<< HEAD
 # IMPORTANT: tell Django it is running u
+=======
+
+
+
+>>>>>>> a28f41a860c3ed9812cbd12dee6ba4534f7b239a
 # Static & Media
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a28f41a860c3ed9812cbd12dee6ba4534f7b239a
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
