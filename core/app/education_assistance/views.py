@@ -1,5 +1,5 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
 from django.db import transaction
@@ -8,10 +8,10 @@ from app.main.models import Barangay
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib import messages 
 from app.employee.models import Employee
+from datetime import date
 # Create your views here.
 
 def is_hrmo(user):
-    # print(user.id)
     if user.is_superuser:
         return True
     
@@ -28,6 +28,7 @@ def is_hrmo(user):
 
 def view(request):
     applicant = Applicants.objects.all()      
+    
     return render(request,'view_admin.html',{"active":'education',"applicants":applicant})
 
 
@@ -95,6 +96,11 @@ def _handle_post(request, active_period):
     max_applicant = Limit.objects.get(id=1).limit_number
         # **CRITICAL: CHECK IF SLOTS FULL NOW**
     brgy = Barangay.objects.all()
+    brgy_value = request.POST.get("brgy")
+    if brgy_value and brgy_value.isdigit():
+        brgy_id = int(brgy_value)
+    else:
+        brgy_id = None
 
     # Extract form data
     form_data = {
@@ -107,9 +113,13 @@ def _handle_post(request, active_period):
         'school': request.POST.get("school", "").strip(),
         'province': request.POST.get("province", "").strip(),
         'name_ext': request.POST.get("name_ext", "").strip(),
-        'brgy': request.POST.get("brgy", "").strip(),
+        'brgy': brgy_id,
         'purok': request.POST.get("purok", "").strip(),
         'is_four': request.POST.get("is_four", "").strip(),
+        'guardian_fName': request.POST.get("guardian_fname", "").strip(),
+        'guardian_mName': request.POST.get("guardian_mname", "").strip(),
+        'guardian_lName': request.POST.get("guardian_lname", "").strip(),
+        'guardian_name_ext': request.POST.get("guardian_name_ext", "").strip(),
     }
     
     # Validation
@@ -121,6 +131,7 @@ def _handle_post(request, active_period):
     
     # Errors
     if errors:
+      
         return render(request, "applicant/applicant.html", {
             "display": "open",
             "count": total_apps,
@@ -139,7 +150,12 @@ def _handle_post1(request, active_period):
     max_applicant = Limit.objects.get(id=1).limit_number
         # **CRITICAL: CHECK IF SLOTS FULL NOW**
     brgy = Barangay.objects.all()
-
+    brgy_value = request.POST.get("brgy")
+    if brgy_value and brgy_value.isdigit():
+        brgy_id = int(brgy_value)
+    else:
+        brgy_id = None
+   
     # Extract form data
     form_data = {
         'fName': request.POST.get("fname", "").strip(),
@@ -151,9 +167,13 @@ def _handle_post1(request, active_period):
         'school': request.POST.get("school", "").strip(),
         'province': request.POST.get("province", "").strip(),
         'name_ext': request.POST.get("name_ext", "").strip(),
-        'brgy': request.POST.get("brgy", "").strip(),
+        'brgy': brgy_id,
         'purok': request.POST.get("purok", "").strip(),
         'is_four': request.POST.get("is_four", "").strip(),
+        'guardian_fName': request.POST.get("guardian_fname", "").strip(),
+        'guardian_mName': request.POST.get("guardian_mname", "").strip(),
+        'guardian_lName': request.POST.get("guardian_lname", "").strip(),
+        'guardian_name_ext': request.POST.get("guardian_name_ext", "").strip(),
     }
     
     # Validation
@@ -182,10 +202,9 @@ def _validate_form(form_data):
     
     if not form_data['fName']: errors["fName"] = "First Name is Required."
     if not form_data['lName']: errors["lName"] = "Last Name is Required."
-    if not form_data['email']: 
-        errors["email"] = "Email is Required."
-    elif Applicants.objects.filter(email=form_data['email']).exists():
-        errors["email"] = "The email must be unique."
+    if not form_data['guardian_fName']: errors["guardian_fName"] = "Guardian First Name is Required."
+    if not form_data['guardian_lName']: errors["guardian_lName"] = "Guardian Last Name is Required."
+  
     if not form_data['contact']: 
         errors["contact"] = "Contact Number is Required."
     elif not form_data['contact'].isdigit():
@@ -198,39 +217,154 @@ def _validate_form(form_data):
     if not form_data['purok']: errors["purok"] = "Purok is Required."
     if not form_data['is_four']: errors["is_four"] = "Please Select a Value."
     
+  
     return errors
+
+
+# def _check_duplicates(form_data):
+#     """Duplicate check"""
+#     errors = {}
+    
+#     now = timezone.now()
+#     today = now.date()
+#     current_year = now.year
+#     if now.month >= 6:
+#         sy_start = date(current_year, 6, 1)
+#         sy_end = date(current_year + 1, 5, 31)
+#         current_semester_start = date(current_year, 6, 1)
+#         current_semester_end = date(current_year, 12, 31)
+#     else:
+#         sy_start = date(current_year - 1, 6, 1)
+#         sy_end = date(current_year, 5, 31)
+#         current_semester_start = date(current_year, 1, 1)
+#         current_semester_end = date(current_year, 5, 31)
+
+#     # 2. FETCH EXISTING APPLICANTS
+#     # We fetch ALL records for this person within the School Year range
+#     query_params = {
+#         'first_name__iexact': form_data['fName'],
+#         'last_name__iexact': form_data['lName'],
+#         'date_created__date__range': (sy_start, sy_end)
+#     }
+#     if form_data.get('mName'):
+#         query_params['middle_name__icontains'] = form_data['mName']
+        
+#     applicants_in_sy = Applicants.objects.filter(**query_params)
+
+#     if applicants_in_sy.exists():
+#         # Check if ANY of their applications this year were approved
+#         has_approval_this_year = applicants_in_sy.filter(status="approved").exists()
+        
+#         if has_approval_this_year:
+#             # Rule: Only one registration per school year if approved
+#             errors["datas"] = "You can only register once per school year because you have an approved application."
+#             return errors
+
+#         # Check if they already have an application (pending/rejected) in the CURRENT semester
+#         has_entry_this_semester = applicants_in_sy.filter(
+#             date_created__date__range=(current_semester_start, current_semester_end)
+#         ).exists()
+
+#         if has_entry_this_semester:
+#             errors["datas"] = "You already have a registration record for this semester."
+#             return errors
+
+#     return None # No duplicates found
 
 
 def _check_duplicates(form_data):
-    """Duplicate check"""
+    """
+    Combined Logic:
+    1. Student Check: 1 per year if 'Approved', otherwise 1 per semester.
+    2. Guardian Check: Strictly 1 registration per SCHOOL YEAR based on Guardian Name.
+    """
     errors = {}
-    
-    if form_data['mName']:
-        applicant = Applicants.objects.filter(
-            first_name__iexact=form_data['fName'],
-            middle_name__icontains=form_data['mName'],
-            last_name__iexact=form_data['lName']
-        ).first()
+    now = timezone.now()
+    current_year = now.year
+
+    # --- PART 1: PREPARE DATE BOUNDARIES ---
+    # School Year (SY) spans from June 1st to May 31st of the following year
+    if now.month >= 6:
+        # 1st Sem (June - Dec) -> SY is [Current Year] to [Next Year]
+        sy_start, sy_end = date(current_year, 6, 1), date(current_year + 1, 5, 31)
+        cs_start, cs_end = date(current_year, 6, 1), date(current_year, 12, 31)
     else:
-        applicant = Applicants.objects.filter(
-            first_name__iexact=form_data['fName'],
-            last_name__iexact=form_data['lName']
-        ).first()
+        # 2nd Sem (Jan - May) -> SY is [Previous Year] to [Current Year]
+        sy_start, sy_end = date(current_year - 1, 6, 1), date(current_year, 5, 31)
+        cs_start, cs_end = date(current_year, 1, 1), date(current_year, 5, 31)
+
+    # --- PART 2: GUARDIAN CHECK (STRICT SCHOOL YEARLY) ---
+    guardian_Fname = form_data.get('guardian_fName')
+    guardian_lName = form_data.get('guardian_lName')
+    guardian_Mname = form_data.get('guardian_mName')
+    guardian_name_ext = form_data.get('guardian_name_ext')
+
+    guardian_filters = {
+        'guardian_first_name__iexact': guardian_Fname,
+        'guardian_last_name__iexact': guardian_lName,
+    }
+
+    if guardian_Mname:
+        guardian_filters['guardian_middle_name__iexact'] = guardian_Mname
+    if guardian_name_ext:
+        guardian_filters['guardian_name_ext__iexact'] = guardian_name_ext
+
+    # Updated: Checking if guardian exists within the calculated School Year (sy_start to sy_end)
+    guardian_match = Applicants.objects.filter(
+        **guardian_filters, 
+        date_created__range=(sy_start, sy_end)
+    ).first()
+
+    if guardian_match:
+        msg = "Sorry! A guardian with this name is already registered for this school year!"
+        errors["guardian_fName"] = msg
+        errors["guardian_lName"] = msg
+        errors["guardian"] = msg
+        if guardian_Mname:
+            errors["guardian_mName"] = msg
+        if guardian_name_ext:
+            errors["guardian_name_ext"] = msg
+
+    # --- PART 3: STUDENT CHECK (SEMESTER/YEAR LOGIC) ---
+    student_filters = {
+        'first_name__iexact': form_data.get('fName'),
+        'last_name__iexact': form_data.get('lName'),
+    }
     
-    if applicant:
-        errors["datas"] = "Sorry! Your Data is already in the System!"
+    mName = form_data.get('mName')
+    if mName:
+        student_filters['middle_name__icontains'] = mName
+
+    # A. Check for any 'Approved' application in the current School Year
+    has_approval_in_sy = Applicants.objects.filter(
+        **student_filters,
+        status="approved",
+        date_created__range=(sy_start, sy_end)
+    ).exists()
+
+    if has_approval_in_sy:
+        errors["datas"] = "You can only register once per school year if approved. An approved application already exists."
     
+    # B. If not already flagged by approval, check if they already applied this semester
+    elif "datas" not in errors:
+        has_entry_this_semester = Applicants.objects.filter(
+            **student_filters,
+            date_created__range=(cs_start, cs_end)
+        ).exists()
+
+        if has_entry_this_semester:
+            errors["datas"] = "An application for this semester is already on file for this student."
+
     return errors
-
-
 def _save_and_check_slots(request, form_data, active_period):
     """SAVE + IMMEDIATE SLOT CHECK"""
+
     try:
         with transaction.atomic():
             # CREATE APPLICANT
             school_id = Applicants.objects.count()
             year = timezone.now().year
-            school = f"{year}00{school_id+1}"
+            school = f"{year}000{school_id+1}"
             applicant = Applicants.objects.create(
                 first_name=form_data['fName'],
                 middle_name=form_data['mName'],
@@ -244,7 +378,11 @@ def _save_and_check_slots(request, form_data, active_period):
                 brgy_id=form_data['brgy'],
                 purok=form_data['purok'],
                 is_four = form_data['is_four'],
-                scholar_id = school 
+                scholar_id = school,
+                guardian_first_name=form_data['guardian_fName'],
+                guardian_middle_name=form_data['guardian_mName'],
+                guardian_last_name=form_data['guardian_lName'],
+                guardian_name_ext=form_data['guardian_name_ext'],
             )
         
         # **FRESH COUNT AFTER SAVE**
@@ -312,7 +450,11 @@ def _save_and_check_slots1(request, form_data, active_period):
                 brgy_id=form_data['brgy'],
                 purok=form_data['purok'],
                 is_four = form_data['is_four'],
-                scholar_id = school 
+                scholar_id = school,
+                guardian_first_name=form_data['guardian_fName'],
+                guardian_middle_name=form_data['guardian_mName'],
+                guardian_last_name=form_data['guardian_lName'],
+                guardian_name_ext=form_data['guardian_name_ext'],
             )
         
         # **FRESH COUNT AFTER SAVE**
@@ -366,3 +508,74 @@ def receipt(request,id):
         "data":app
     }
     return render(request,"applicant/receipt.html",context)
+
+
+@login_required
+def bulk_action(request):
+    if request.method == 'POST':  # adjust role check
+        action = request.POST.get('action')
+        applicant_ids = request.POST.getlist('applicant_ids')
+
+        applicants = Applicants.objects.filter(id__in=applicant_ids)
+
+        if action == 'approve':
+         
+            applicants.update(status='approved',date_approved = timezone.now())  # assuming you have a status field
+        elif action == 'disapprove':
+            applicants.update(status='disapproved',date_approved = timezone.now())
+        elif action == 'delete':
+            applicants.delete()
+
+        messages.success(request, f'{action.capitalize()} action completed.')
+        return redirect('education:view')
+
+    return redirect('education:list')
+
+
+def settings(request):
+    entry = DataEntryPeriod.objects.first()
+    
+    context = {
+        "active":"education_settings",
+        "data":entry
+    }
+    
+    if request.method == 'POST':
+        is_active = request.POST.get('is_active')
+        from_date = request.POST.get('from_date')
+        to_date = request.POST.get('to_date')
+        errors = {}
+        if not is_active:
+            errors['is_active'] = "Please select if Yes or No"
+        if not from_date:
+            errors['from_date'] = "Open Date is Required"
+        if not to_date:
+            errors['to_date'] = "Close Date is Required"
+        
+        if from_date and to_date:
+            if from_date > to_date:
+                errors['from_date'] = "Open Date Must Earlier than Close Date"
+            
+            
+            
+        if errors:
+            context['errors'] = errors
+        else:
+            try:
+                updates = get_object_or_404(DataEntryPeriod,id=1)
+                updates.is_active = is_active
+                updates.open_date = date.fromisoformat(from_date)
+                updates.close_date = date.fromisoformat(to_date)
+                updates.save()
+                
+                messages.success(request, f'Settings Updated Successfully!')
+                updatedentry = DataEntryPeriod.objects.first()
+                context["data"]=updatedentry
+                return  redirect("education:view") 
+            except Exception as e:
+                    
+                messages.error(request, f'Saving Settings Failed!')
+      
+        return  render(request,"settings.html",context)    
+    else:
+        return  render(request,"settings.html",context)

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  LGU Admin Education - Settings
+{% endblock %}
+
+{% block extrahead %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+{% endblock %}
+
+{% block main %}
+  <div class="drawer lg:drawer-open bg-stone-100 min-h-screen">
+    <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex flex-col">
+      {% include 'navbar.html' %}
+
+      <main class="flex-1">
+        <div class="bg-green-500 h-16 flex items-end justify-end px-4 md:px-6">
+          <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-white pb-3"><a href="{% url 'education:register' %}" target="_blank">EDUCATION ASSISTANCE</a></h1>
+        </div>
+
+        {% if messages %}
+          <div class="px-4 md:px-6 mt-6">
+            {% for message in messages %}
+              <div class="alert {% if message.tags == 'error' %}
+                  
+                  
+                  
+                  alert-error
+
+
+
+                {% else %}
+                  
+                  
+                  
+                  alert-success
+
+
+
+                {% endif %} shadow-lg mb-3">
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="p-4 md:p-6 lg:p-8">
+          <div class="bg-white lg:p-10 p-2 shadow-md rounded-lg overflow-hidden">
+            <!-- Bulk Actions & Buttons -->
+            <div class="p-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 class="text-lg text-center font-semibold text-gray-800">Education Assistance Settings</h2>
+            </div>
+            <form action="" method="post" class="p-10 flex flex-col gap-5">
+                {% csrf_token %}
+              <div class="flex flex-col md:flex-row gap-10">
+                <div class="w-full md:w-[30%] lg:w-[50%] xl:w-[30%]">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Open the Application <span class="text-red-500">*</span></label>
+                  <select name="is_active" id="" class="select {% if errors.is_active %}border-red-500{% endif %} ">
+                    <option value="" selected disabled>Select</option>
+                <option value="1" 
+                            {% if  data.is_active %}selected{% endif %}>
+                            Active (Accepting Applications)
+                        </option>
+                        
+                        <option value="0" 
+                            {% if not data.is_active %}selected{% endif %}>
+                            Inactive (Paused)
+                        </option>
+                </select>
+                  {% if errors.is_active %}
+                    <p class="mt-1 text-sm text-red-600">{{ errors.is_active }}</p>
+                  {% endif %}
+                </div>
+                <div class="w-full flex flex-col md:flex-row gap-5">
+                  <div class="w-full">
+                    <div>
+                      <label for=""  class="block text-sm font-medium text-grady-700 mb-1">From <span class="text-red-500">*</span></label>
+                      <input type="date" name="from_date"   value="{% firstof request.POST.from_date data.open_date|date:'Y-m-d' %}" class=" {% if errors.from_date %}border-red-500{% endif %} input w-full" />
+                      {% if errors.from_date %}
+                        <p class="mt-1 text-sm text-red-600">{{ errors.from_date }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="w-full">
+                    <div>
+                      <label for="" class="block text-sm font-medium text-grady-700 mb-1">To <span class="text-red-500">*</span></label>
+                      <input type="date" name="to_date"    value="{% firstof request.POST.to_date data.close_date|date:'Y-m-d' %}" class=" {% if errors.to_date %}border-red-500{% endif %} input w-full" />
+                      {% if errors.to_date %}
+                        <p class="mt-1 text-sm text-red-600">{{ errors.to_date }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full flex justify-end">
+                <button type="submit" class="btn btn-info px-10"><i class="fas fa-save"></i> Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    {% include 'sidebar.html' %}
+  </div>
+{% endblock %}

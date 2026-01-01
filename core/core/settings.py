@@ -13,6 +13,8 @@ SECRET_KEY = 'django-insecure-7iue1t1p937up2%dn_l*=o)z8@e49ntb3-r!%f*+a&m8944091
 DEBUG = True
 ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
 
+dbPass = ""
+
 CSRF_TRUSTED_ORIGINS = [
     'https://lgu.labocamnorte.site',
     'https://labocamnorte.site',
@@ -95,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'lgu_main_system',
         'USER': 'root',
-        'PASSWORD': 'P@55word',
+        'PASSWORD': dbPass,
         'HOST': '127.0.0.1',
         'PORT': '3306', 
     }

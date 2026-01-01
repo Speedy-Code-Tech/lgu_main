@@ -23,7 +23,17 @@ def is_gso_active_class(request,active):
               'supplies', 'vehicle', 'reports']
     )
     return 'bg-green-600 text-white' if gso_active else 'text-gray-700 hover:bg-gray-100'
+
+@register.simple_tag
+def is_mhrmo_active_class(request,active):
+    paths = request.path if request else ''
+    mhrmo_active = (
+    'mhrmo' in paths or
+    active in ['education', 'education_settings']
+    )
+    return 'bg-green-600 text-white' if mhrmo_active else 'text-gray-700 hover:bg-gray-100'
     
+ 
 @register.simple_tag(takes_context=True)
 def check_role(context):
     user = context['request'].user
@@ -39,7 +49,17 @@ def check_role(context):
 
 
 @register.simple_tag(takes_context=True)
-def check_if_gso(context):
+def check_if_dept(context):
+    user = context['request'].user
+    if user.is_superuser:
+        return True
+    else:
+        employee = Employee.objects.select_related('department').get(user=user)
+        if employee.department.abbreviation == "MHRMO":
+            return True
+
+@register.simple_tag(takes_context=True)
+def check_if_mgso(context):
     user = context['request'].user
     if user.is_superuser:
         return True

@@ -1,7 +1,8 @@
 <!-- sidebar.html -->
 {% load sidebar_tags %}
 {% check_role as user_role %}
-{% check_if_gso as is_gso %}
+{% check_if_dept as is_dept %}
+{% check_if_mgso as is_gso %}
 {% check_if_hrmo as is_hrmo %}
 {% check_education as education %}
 {% check_event as event %}
@@ -54,12 +55,16 @@
     {% endif %}
   
     {% if education or is_hrmo %}
-
-    <li class="text-md">
-      <a href="{% url 'education:view' %}" class="{% if active == 'education' %}bg-green-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} rounded-lg">
-        <i class="fas fa-book"></i> Education
-      </a>
-    </li>
+        <li class="text-md">
+          <details>
+            <summary class="{% is_mhrmo_active_class request active %}">
+                <i class="fas fa-book"></i> <span class="text-md">Education</span>
+            </summary>
+             <ul class="ml-4 mt-2 space-y-1">
+                <li class="text-md"><a href="{% url 'education:view' %}" class="{% if active == 'education' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">List of Scholars</a></li>
+                <li class="text-md"><a href="{% url 'education:settings' %}" class="{% if active == 'education_settings' %}bg-green-600 text-white{% else %}hover:bg-gray-200{% endif %} rounded-lg text-sm">Settings</a></li>
+          </details>
+        </li>
     {% endif %}
     {% if is_gso %}
       

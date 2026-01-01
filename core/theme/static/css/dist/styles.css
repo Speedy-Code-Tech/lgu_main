@@ -12,6 +12,7 @@
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-red-700: oklch(50.5% 0.213 27.518);
+    --color-orange-600: oklch(64.6% 0.222 41.116);
     --color-amber-50: oklch(98.7% 0.022 95.277);
     --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-yellow-500: oklch(79.5% 0.184 86.047);
@@ -19,6 +20,7 @@
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-green-800: oklch(44.8% 0.119 151.328);
     --color-cyan-500: oklch(71.5% 0.143 215.221);
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-blue-700: oklch(48.8% 0.243 264.376);
@@ -66,6 +68,7 @@
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
     --tracking-normal: 0em;
     --tracking-wider: 0.05em;
     --leading-normal: 1.5;
@@ -74,6 +77,7 @@
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
     --radius-2xl: 1rem;
+    --radius-4xl: 2rem;
     --drop-shadow-lg: 0 4px 4px rgb(0 0 0 / 0.15);
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -2754,6 +2758,34 @@
       translate: 0 50%;
     }
   }
+  @layer daisyui.modifier {
+    .dropdown-end {
+      --anchor-h: span-left;
+    }
+    .dropdown-end :where(.dropdown-content) {
+      inset-inline-end: calc(0.25rem * 0);
+      translate: 0 0;
+    }
+    [dir="rtl"] .dropdown-end :where(.dropdown-content) {
+      translate: 0 0;
+    }
+    .dropdown-end.dropdown-left {
+      --anchor-h: left;
+      --anchor-v: span-top;
+    }
+    .dropdown-end.dropdown-left .dropdown-content {
+      top: auto;
+      bottom: calc(0.25rem * 0);
+    }
+    .dropdown-end.dropdown-right {
+      --anchor-h: right;
+      --anchor-v: span-top;
+    }
+    .dropdown-end.dropdown-right .dropdown-content {
+      top: auto;
+      bottom: calc(0.25rem * 0);
+    }
+  }
   .top-2 {
     top: calc(var(--spacing) * 2);
   }
@@ -3100,6 +3132,15 @@
     grid-column: 1 / -1;
   }
   @layer daisyui.component {
+    .stat-figure {
+      grid-column-start: 2;
+      grid-row: span 3 / span 3;
+      grid-row-start: 1;
+      place-self: center;
+      justify-self: flex-end;
+    }
+  }
+  @layer daisyui.component {
     .hero {
       display: grid;
       width: 100%;
@@ -3163,19 +3204,6 @@
     }
   }
   @layer daisyui.component {
-    .stat-desc {
-      grid-column-start: 1;
-      white-space: nowrap;
-      color: var(--color-base-content);
-      font-size: 0.75rem;
-    }
-    @supports (color: color-mix(in lab, red, red)) {
-      .stat-desc {
-        color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
-      }
-    }
-  }
-  @layer daisyui.component {
     .stat-title {
       grid-column-start: 1;
       white-space: nowrap;
@@ -3186,12 +3214,6 @@
       .stat-title {
         color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
       }
-    }
-  }
-  @layer daisyui.component {
-    .stat-actions {
-      grid-column-start: 1;
-      white-space: nowrap;
     }
   }
   .container {
@@ -3683,15 +3705,6 @@
       gap: calc(0.25rem * 2);
     }
   }
-  @layer daisyui.component {
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: calc(0.25rem * 2);
-      font-size: var(--cardtitle-fs, 1.125rem);
-      font-weight: 600;
-    }
-  }
   .join {
     display: inline-flex;
     align-items: stretch;
@@ -3834,6 +3847,12 @@
   .h-50 {
     height: calc(var(--spacing) * 50);
   }
+  .h-96 {
+    height: calc(var(--spacing) * 96);
+  }
+  .h-\[2px\] {
+    height: 2px;
+  }
   .h-\[230px\] {
     height: 230px;
   }
@@ -3867,6 +3886,12 @@
   .w-30 {
     width: calc(var(--spacing) * 30);
   }
+  .w-50 {
+    width: calc(var(--spacing) * 50);
+  }
+  .w-52 {
+    width: calc(var(--spacing) * 52);
+  }
   .w-64 {
     width: calc(var(--spacing) * 64);
   }
@@ -3875,6 +3900,9 @@
   }
   .w-100 {
     width: calc(var(--spacing) * 100);
+  }
+  .w-\[50\%\] {
+    width: 50%;
   }
   .w-\[60\%\] {
     width: 60%;
@@ -3896,9 +3924,6 @@
   }
   .max-w-\[150px\] {
     max-width: 150px;
-  }
-  .max-w-full {
-    max-width: 100%;
   }
   .max-w-md {
     max-width: var(--container-md);
@@ -4074,6 +4099,9 @@
   .rounded-2xl {
     border-radius: var(--radius-2xl);
   }
+  .rounded-4xl {
+    border-radius: var(--radius-4xl);
+  }
   .rounded-box {
     border-radius: var(--radius-box);
   }
@@ -4206,6 +4234,12 @@
   .object-cover {
     object-fit: cover;
   }
+  @layer daisyui.modifier {
+    .checkbox-sm {
+      padding: 0.1875rem;
+      --size: calc(var(--size-selector, 0.25rem) * 5);
+    }
+  }
   .p-2 {
     padding: calc(var(--spacing) * 2);
   }
@@ -4224,6 +4258,9 @@
   .p-8 {
     padding: calc(var(--spacing) * 8);
   }
+  .p-10 {
+    padding: calc(var(--spacing) * 10);
+  }
   @layer daisyui.modifier {
     .select-sm {
       --size: calc(var(--size-field, 0.25rem) * 8);
@@ -4241,6 +4278,9 @@
       padding-inline: calc(0.25rem * 2.5 - var(--border));
     }
   }
+  .px-0 {
+    padding-inline: calc(var(--spacing) * 0);
+  }
   .px-3 {
     padding-inline: calc(var(--spacing) * 3);
   }
@@ -4253,11 +4293,11 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
+  .px-10 {
+    padding-inline: calc(var(--spacing) * 10);
+  }
   .px-20 {
     padding-inline: calc(var(--spacing) * 20);
-  }
-  .px-\[15\%\] {
-    padding-inline: 15%;
   }
   .py-0 {
     padding-block: calc(var(--spacing) * 0);
@@ -4277,14 +4317,14 @@
   .py-5 {
     padding-block: calc(var(--spacing) * 5);
   }
+  .py-10 {
+    padding-block: calc(var(--spacing) * 10);
+  }
   .py-14 {
     padding-block: calc(var(--spacing) * 14);
   }
   .ps-2 {
     padding-inline-start: calc(var(--spacing) * 2);
-  }
-  .ps-4 {
-    padding-inline-start: calc(var(--spacing) * 4);
   }
   .ps-8 {
     padding-inline-start: calc(var(--spacing) * 8);
@@ -4330,9 +4370,6 @@
   }
   .text-right {
     text-align: right;
-  }
-  .text-start {
-    text-align: start;
   }
   .font-mono {
     font-family: var(--font-mono);
@@ -4383,6 +4420,10 @@
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
+  }
+  .font-extrabold {
+    --tw-font-weight: var(--font-weight-extrabold);
+    font-weight: var(--font-weight-extrabold);
   }
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
@@ -4467,14 +4508,23 @@
   .text-green-500 {
     color: var(--color-green-500);
   }
+  .text-green-600 {
+    color: var(--color-green-600);
+  }
   .text-green-700 {
     color: var(--color-green-700);
+  }
+  .text-green-800 {
+    color: var(--color-green-800);
   }
   .text-info {
     color: var(--color-info);
   }
   .text-neutral-content {
     color: var(--color-neutral-content);
+  }
+  .text-orange-600 {
+    color: var(--color-orange-600);
   }
   .text-red-500 {
     color: var(--color-red-500);
@@ -4496,9 +4546,6 @@
   }
   .text-stone-900 {
     color: var(--color-stone-900);
-  }
-  .text-success {
-    color: var(--color-success);
   }
   .text-warning {
     color: var(--color-warning);
@@ -4728,6 +4775,10 @@
       --btn-fg: var(--color-warning-content);
     }
   }
+  .select-all {
+    -webkit-user-select: all;
+    user-select: all;
+  }
   @layer daisyui.modifier {
     .input-error, .input-error:focus, .input-error:focus-within {
       --input-color: var(--color-error);
@@ -4794,6 +4845,11 @@
   @media (hover: hover) {
     .hover\:text-green-600:hover {
       color: var(--color-green-600);
+    }
+  }
+  @media (hover: hover) {
+    .hover\:text-green-800:hover {
+      color: var(--color-green-800);
     }
   }
   @media (hover: hover) {
@@ -4872,6 +4928,11 @@
     }
   }
   @media (width >= 40rem) {
+    .sm\:w-\[50\%\] {
+      width: 50%;
+    }
+  }
+  @media (width >= 40rem) {
     .sm\:w-\[75\%\] {
       width: 75%;
     }
@@ -4935,6 +4996,21 @@
     }
   }
   @media (width >= 48rem) {
+    .md\:w-\[30\%\] {
+      width: 30%;
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:w-\[40\%\] {
+      width: 40%;
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:w-\[50\%\] {
+      width: 50%;
+    }
+  }
+  @media (width >= 48rem) {
     .md\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -4945,6 +5021,16 @@
     }
   }
   @media (width >= 48rem) {
+    .md\:flex-row {
+      flex-direction: row;
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:items-center {
+      align-items: center;
+    }
+  }
+  @media (width >= 48rem) {
     .md\:p-6 {
       padding: calc(var(--spacing) * 6);
     }
@@ -4952,6 +5038,26 @@
   @media (width >= 48rem) {
     .md\:px-6 {
       padding-inline: calc(var(--spacing) * 6);
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:px-\[15\%\] {
+      padding-inline: 15%;
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:pb-0 {
+      padding-bottom: calc(var(--spacing) * 0);
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:text-end {
+      text-align: end;
+    }
+  }
+  @media (width >= 48rem) {
+    .md\:text-start {
+      text-align: start;
     }
   }
   @media (width >= 48rem) {
@@ -5061,6 +5167,21 @@
     }
   }
   @media (width >= 64rem) {
+    .lg\:w-\[30\%\] {
+      width: 30%;
+    }
+  }
+  @media (width >= 64rem) {
+    .lg\:w-\[50\%\] {
+      width: 50%;
+    }
+  }
+  @media (width >= 64rem) {
+    .lg\:grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (width >= 64rem) {
     .lg\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -5094,6 +5215,11 @@
   @media (width >= 80rem) {
     .xl\:table-cell {
       display: table-cell;
+    }
+  }
+  @media (width >= 80rem) {
+    .xl\:w-\[30\%\] {
+      width: 30%;
     }
   }
   @media (width >= 80rem) {
