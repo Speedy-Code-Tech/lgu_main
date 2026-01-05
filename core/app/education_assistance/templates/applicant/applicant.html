@@ -33,20 +33,20 @@
     <article class="p-5">        
         <p class="ps-2 border-s-2 font-bold border-green-500 text-stone-900 text-xl sm:text-2xl md:text-3xl">Qualification/s</p>
         <ul class="pt-5 mb-8 ps-8 flex flex-col gap-4 list-decimal">
-            <li>Parents must be a resident and/or registered voter of this municipality. <strong>(Labo)</strong></li>
-            <li>For High School students must be enrolled in any institution here in Labo, Camarines Norte while for College Students must be enrolled or will enroll in any institution within the province of Camarines Norte</li>
-            <li>With Good Moral Character</li>
-            <li>Must be a member of Indigent Family but not a beneficiary of 4Ps</li>
-            <li>With at least 80 GWA.</li>
+            <li>The Applicant or his/her parents/guardian must be a resident and/or registered voter of the municipality of <strong>Labo Camarines Norte</strong>. </li>
+            <li>The Applicant (<strong>Junior and Senior High School</strong>) is enrolled in any educational institution within the province while the College student Applicant is enrolled in any state colleges or universities within the province of <strong>Camarines Norte</strong>.</li>
+            <li>With at least <strong>80 percent</strong> weighted average.</li>
+            <li>The Family is not a beneficiary of <strong>4P's Program</strong>.</li>
+            <li>For Those passer of Alternative Learning System (ALS) program, <strong>item No.  3</strong> hereof is waived.</li>
         </ul>
 
         <p class="ps-2 border-s-2 font-bold border-green-500 text-stone-900 text-xl sm:text-2xl md:text-3xl">Requirement/s</p>
         <ul class="pt-5 ps-8 flex flex-col gap-4 list-decimal">
-            <li>COG or Photocopy of the Report Card <strong>(Last School Attended)</strong></li>
-            <li>Barangay Residency <strong>(Respective Barangay)</strong></li>
-            <li>Photocopy of Parent/Guardian’s Income Tax Return <strong>(BIR Talisay)</strong></li>
-            <li>Certificate of Good Moral Character <strong>(School Last Attended)</strong></li>
-            <li>Affidavit of Non-4Ps Beneficiary <strong>(Human Resource Management Office, Municipal Building)</strong></li>
+            <li>Certificates of Grades reflecting the general weighted average or photocopy of the Report Card except for ALS passer-applicants.</li>
+            <li>ALS pseer applicants shall present the A & E results.</li>
+            <li>Barangay Residency stating that the parents/guardians of the grantee are residents of the barangay and stating further that they belong to indigent families.</li>
+            <li>Self declaration of parent/guardian that their family is not a recipient of 4Ps program subscribe before the Municipal Mayor.</li>
+            <li>Certificate of Enrollment or Matriculation Form, whatever is applicable.</li>
         </ul>
     </article>
 
@@ -91,7 +91,7 @@
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.lName or errors.datas %}border-red-500{% endif %}" />
                     {% if errors.datas %}<p class="mt-1 text-sm text-red-600">{{ errors.datas }}</p>{% endif %}
                            {% if errors.lName %}<p class="mt-1 text-sm text-red-600">{{ errors.lName }}</p>{% endif %}
-                </div>
+                </div> 
                 <div class="w-1/3">
                      <label class="block text-sm font-medium text-gray-700 mb-1">
                         Name Ext. 
@@ -130,10 +130,21 @@
             </div>
 
             <!-- GRADE & SCHOOL ROW -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Level <span class="text-red-500">*</span></label>
+                    <select name="level" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.level %}border-red-500{% endif %}">
+                        <option value="" disabled {% if not level %}selected{% endif %}>Select Level</option>
+                        <option value="hs" {% if level == "hs" %}selected{% endif %}>High School</option>
+                        <option value="shs" {% if level == "shs" %}selected{% endif %}>Senior High School</option>
+                        <option value="als" {% if level == "als" %}selected{% endif %}>ALS</option>
+                        <option value="college" {% if level == "college" %}selected{% endif %}>College</option>
+                    </select>
+                    {% if errors.level %}<p class="mt-1 text-sm text-red-600">{{ errors.level }}</p>{% endif %}
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Year/Grade <span class="text-red-500">*</span></label>
-                    <input type="text" name="grade" value="{{ grade|default_if_none:'' }}" placeholder="Grade 8, Grade 12-STEM, 1st Year BSCS"
+                    <input type="text" name="grade" value="{{ grade|default_if_none:'' }}" placeholder="Grade 8, Grade 12-STEM, 1st Year BSCS, ALS"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.grade %}border-red-500{% endif %}" />
                     {% if errors.grade %}<p class="mt-1 text-sm text-red-600">{{ errors.grade }}</p>{% endif %}
                 </div>
@@ -217,11 +228,23 @@
                 </div>
                
             </div>
+            <!-- DATA PRIVACY CONSENT -->
+                <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" id="privacy-consent" name="privacy_consent" class="checkbox checkbox-info mt-1" required />
+                    <span class="text-sm text-gray-700">
+                      I have read and agree to the 
+                      <a href="#" id="open-privacy-modal" class="link link-primary font-medium underline">Data Privacy Notice and Terms & Conditions</a>
+                      regarding the collection, use, and processing of my personal information for the Education Assistance Program of the Municipality of Labo.
+                      <span class="text-red-500">*</span>
+                    </span>
+                  </label>
+                </div>
 
             <!-- SUBMIT BUTTON -->
             <div class="text-center">
                 <button type="submit" id="submit-btn"
-                        class="px-6 py-3 bg-green-500 text-white font-semibold rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        class="cursor-pointer px-6 py-3 bg-green-500 text-white font-semibold rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                     SUBMIT APPLICATION
                 </button>
             </div>
@@ -266,7 +289,52 @@
         </div>
     </div>
 </dialog>
-
+<dialog id="privacy-modal" class="modal backdrop:bg-black/50">
+        <div class="modal-box max-w-4xl">
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <h3 class="text-xl font-bold mb-6 text-center">Data Privacy Notice & Terms and Conditions</h3>
+          
+          <div class="prose prose-sm max-w-none overflow-y-auto max-h-96 space-y-4 text-gray-700">
+            <p class="font-semibold">Data Privacy Notice</p>
+            <p>The Municipality of Labo, Camarines Norte, through its Education Assistance Program, collects personal information solely for the purpose of processing your scholarship application, verification, and disbursement of financial assistance.</p>
+            
+            <p><strong>Information Collected:</strong> Full name, contact details, educational information, guardian details, address, and 4Ps beneficiary status.</p>
+            
+            <p><strong>Purpose:</strong></p>
+            <ul class="list-disc pl-6">
+              <li>To evaluate eligibility for educational assistance</li>
+              <li>To communicate program updates and requirements</li>
+              <li>To maintain records for monitoring and reporting</li>
+              <li>To comply with government auditing and legal requirements</li>
+            </ul>
+            
+            <p><strong>Data Protection:</strong> Your personal information is stored securely and access is limited to authorized personnel only. We do not share your data with third parties except when required by law.</p>
+            
+            <p><strong>Your Rights:</strong> You have the right to access, correct, or request deletion of your personal data in accordance with Republic Act No. 10173 (Data Privacy Act of 2012).</p>
+            
+            <hr class="my-6 border-gray-300">
+            
+            <p class="font-semibold">Terms and Conditions</p>
+            <ul class="list-disc pl-6">
+              <li>All information provided must be true and accurate. False declaration may result in disqualification or legal action.</li>
+              <li>Recipients must maintain good academic standing and comply with program guidelines.</li>
+              <li>The Municipality reserves the right to verify submitted information.</li>
+              <li>Assistance may be discontinued for non-compliance with requirements.</li>
+              <li>By submitting this application, you consent to the processing of your personal data as described above.</li>
+            </ul>
+            
+            <p class="mt-6 text-center font-medium">For inquiries, contact the Education Assistance Program Coordinator or the System Administrator.</p>
+          </div>
+          
+          <div class="modal-action mt-8">
+            <form method="dialog">
+              <button class="btn btn-success w-full">I Understand and Agree</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
 {% endblock %}
 
 {% block scripts %}
@@ -276,45 +344,85 @@
         const modal = document.getElementById('confirm-modal');
         const modalContent = document.getElementById('modal-content');
         const confirmSubmitBtn = document.getElementById('confirm-submit');
-           const errorAlert = document.getElementById('error-alert-container');
-      
- // --- Alert Fading Logic ---
+        const errorAlert = document.getElementById('error-alert-container');
+
+        // Privacy-related elements
+        const privacyModal = document.getElementById('privacy-modal');
+        const openPrivacyLink = document.getElementById('open-privacy-modal');
+        const privacyCheckbox = document.getElementById('privacy-consent');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // --- Alert Fading Logic ---
         if (errorAlert) {
-            // Wait for 3 seconds before starting the fade
             setTimeout(() => {
-                // Start the CSS transition (opacity-100 -> opacity-0)
                 errorAlert.classList.remove('opacity-100');
                 errorAlert.classList.add('opacity-0');
-
-                // Wait for the transition duration (1000ms or 1 second) before removing the element entirely
-                setTimeout(() => {
-                    errorAlert.remove();
-                }, 1000);
-            }, 3000); // 3000ms = 3 seconds delay
+                setTimeout(() => errorAlert.remove(), 1000);
+            }, 3000);
         }
+
+        // --- Privacy Modal Open ---
+        openPrivacyLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            privacyModal.showModal();
+        });
+
+        // --- Enable/Disable Submit Button based on Privacy Consent ---
+        privacyCheckbox.addEventListener('change', function () {
+            submitBtn.disabled = !this.checked;
+        });
+
+        // --- Form Submit: Confirmation Modal ---
         form.addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevent immediate submission
+            e.preventDefault();
+
+            // Check if privacy consent is given
+            if (!privacyCheckbox.checked) {
+               Swal.fire({
+            icon: 'info',
+            text: 'Please read and agree to the Data Privacy Notice and Terms & Conditions before submitting.'
+          })
+                //   {% comment %} alert('Please read and agree to the Data Privacy Notice and Terms & Conditions before submitting.'); {% endcomment %}
+                return;
+            }
+
+            // Get barangay text safely
             const brgySelect = form.brgy;
-            const brgyText = brgySelect.options[brgySelect.selectedIndex].text;
-            // Populate modal with form data for review
+            const brgyText = brgySelect.selectedIndex >= 0 
+                ? brgySelect.options[brgySelect.selectedIndex].text 
+                : '';
+
+            // Get educational level text
+            const levelSelect = form.level;
+            const levelText = levelSelect.selectedIndex >= 0 
+                ? levelSelect.options[levelSelect.selectedIndex].text 
+                : '';
+
+            // Populate confirmation modal with complete data
             modalContent.innerHTML = `
-                <p><strong>Name:</strong> ${form.fname.value} ${form.mname.value || ''} ${form.lname.value}</p>
-                <p><strong>Email:</strong> ${form.email.value}</p>
-                <p><strong>Contact:</strong> ${form.contact.value}</p>
-                <p><strong>4Ps Beneficiary:</strong> ${form.is_four.value === '1' ? 'Yes' : 'No'}</p>
-                <p><strong>Year/Grade:</strong> ${form.grade.value}</p>
-                <p><strong>Guardian Name:</strong> ${form.guardian_fname.value} ${form.guardian_mname.value || ''} ${form.guardian_lname.value}</p>
-                <p><strong>School:</strong> ${form.school.value}</p>
-                <p><strong>Address:</strong> ${form.purok.value} ${brgyText}, ${form.province.value} </p>
+                <div class="space-y-3 text-left">
+                    <p><strong>Full Name:</strong> ${form.fname.value.trim()} ${form.mname.value.trim() || ''} ${form.lname.value.trim()} ${form.name_ext.value.trim() || ''}</p>
+                    <p><strong>Email:</strong> ${form.email.value || 'Not provided'}</p>
+                    <p><strong>Contact No.:</strong> ${form.contact.value}</p>
+                    <p><strong>4Ps Beneficiary:</strong> ${form.is_four.value === '1' ? 'Yes' : 'No'}</p>
+                    <p><strong>Educational Level:</strong> ${levelText}</p>
+                    <p><strong>Year/Grade:</strong> ${form.grade.value}</p>
+                    <p><strong>School:</strong> ${form.school.value}</p>
+                    
+                    <hr class="my-4 border-gray-300">
+                    
+                    <p><strong>Guardian Name:</strong> ${form.guardian_fname.value.trim()} ${form.guardian_mname.value.trim() || ''} ${form.guardian_lname.value.trim()} ${form.guardian_name_ext.value.trim() || ''}</p>
+                    <p><strong>Address:</strong> Purok ${form.purok.value.trim()}, ${brgyText}, ${form.province.value.trim()}</p>
+                </div>
             `;
 
             modal.showModal();
         });
 
-        // Confirm submission
+        // --- Final Submission on Confirmation ---
         confirmSubmitBtn.addEventListener('click', function () {
-            form.submit(); // Now actually submit the form
+            form.submit(); // Actually submit the form to the server
         });
     });
 </script>
-{% endblock %} 
+{% endblock %}

@@ -84,7 +84,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">4Ps Beneficiary <span class="text-red-500">*</span></label>
                     <select name="is_four" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.is_four %}border-red-500{% endif %}">
-                        <option value="" disabled {% if not is_four %}selected{% endif %}>Select</option>
+                        <option value="" disabled {% if not is_four %} selected {% endif %}>Select</option>
                         <option value="1" {% if is_four == "1" %}selected{% endif %}>Yes</option>
                         <option value="0" {% if is_four == "0" %}selected{% endif %}>No</option>
                     </select>
@@ -93,10 +93,21 @@
             </div>
 
             <!-- GRADE & SCHOOL ROW -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Level <span class="text-red-500">*</span></label>
+                    <select name="level" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.level %}border-red-500{% endif %}">
+                        <option value="" disabled {% if not level %}selected{% endif %}>Select Level</option>
+                        <option value="hs" {% if level == "hs" %}selected{% endif %}>High School</option>
+                        <option value="shs" {% if level == "shs" %}selected{% endif %}>Senior High School</option>
+                        <option value="als" {% if level == "als" %}selected{% endif %}>ALS</option>
+                        <option value="college" {% if level == "college" %}selected{% endif %}>College</option>
+                    </select>
+                    {% if errors.level %}<p class="mt-1 text-sm text-red-600">{{ errors.level }}</p>{% endif %}
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Year/Grade <span class="text-red-500">*</span></label>
-                    <input type="text" name="grade" value="{{ grade|default_if_none:'' }}" placeholder="Grade 8, Grade 12-STEM, 1st Year BSCS"
+                    <input type="text" name="grade" value="{{ grade|default_if_none:'' }}" placeholder="Grade 8, Grade 12-STEM, 1st Year BSCS, ALS"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {% if errors.grade %}border-red-500{% endif %}" />
                     {% if errors.grade %}<p class="mt-1 text-sm text-red-600">{{ errors.grade }}</p>{% endif %}
                 </div>
@@ -189,7 +200,7 @@
                 </button>
             </div>
         </form>
-    </section>
+</section>
           </div>
            </div>
 
