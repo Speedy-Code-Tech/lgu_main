@@ -3,17 +3,21 @@ Django settings for core project.
 Fixed & optimized for Windows + Tailwind + Hot Reload (Nov 2025)
 """
 
-from pathlib import Path
-import os
+from pathlib import Path 
+import os 
+from dotenv import load_dotenv
 # Build paths
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent   
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY
-SECRET_KEY = 'django-insecure-7iue1t1p937up2%dn_l*=o)z8@e49ntb3-r!%f*+a&m8944091'
-DEBUG = True
-ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site', '127.0.0.1','192.168.1.22','192.168.1.77','192.168.1.77:8000']
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','lgu_django_secret_key') 
 
-dbPass = ""
+DEBUG = os.environ.get('DEBUG','True') == 'True'
+ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site', '127.0.0.1']
+
+dbPass = os.environ.get('DATABASE_PASSWORD','myPasswordLGU')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://lgu.labocamnorte.site',
@@ -50,7 +54,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+NPM_BIN_PATH = "/usr/bin/npm"
 # Tailwind config
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
@@ -95,11 +99,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lgu_main_system',
-        'USER': 'root',
+        'NAME': os.environ.get('DATABASE_NAME','main'),
+        'USER': os.environ.get('DATABASE_USERNAME','myUser'),
         'PASSWORD': dbPass,
-        'HOST': '127.0.0.1',
-        'PORT': '3306', 
+        'HOST': os.environ.get('DATABASE_HOST','localhost'),
+        'PORT': os.environ.get('DATABASE_PORT','3306'), 
     }
 }
 
