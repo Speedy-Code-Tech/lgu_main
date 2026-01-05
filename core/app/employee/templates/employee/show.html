@@ -207,10 +207,10 @@
                       <legend class="fieldset-legend pb-0 text-lg">Position</legend>
                       <p name="position" id="" class="input w-full {% if error.position.msg %} input-error {% endif %}">
                         {% for position in  positions %}
-                        <option value="{{ position.id }}"
-    {% if emp.position_id == position.id %}selected{% endif %}>
-    {{ position.title }}
-  </option>
+                        
+                          {% if emp.position_id == position.id %}
+                            {{ position.title }}
+                          {% endif %}
                         {% endfor %}
                        </p>
                   <span class="font-semibold text-error">{{error.position.msg}}</span>
