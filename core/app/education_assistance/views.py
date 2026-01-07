@@ -272,90 +272,172 @@ def _validate_form(form_data):
 #     return None # No duplicates found
 
 
+# UPDATED
+# def _check_duplicates(form_data):
+#     """
+#     Combined Logic:
+#     1. Student Check: 1 per year if 'Approved', otherwise 1 per semester.
+#     2. Guardian Check: Strictly 1 registration per SCHOOL YEAR based on Guardian Name.
+#     """
+#     errors = {}
+#     now = timezone.now()
+#     current_year = now.year
+
+#     # --- PART 1: PREPARE DATE BOUNDARIES ---
+#     # School Year (SY) spans from June 1st to May 31st of the following year
+#     if now.month >= 6:
+#         # 1st Sem (June - Dec) -> SY is [Current Year] to [Next Year]
+#         sy_start, sy_end = date(current_year, 6, 1), date(current_year + 1, 5, 31)
+#         cs_start, cs_end = date(current_year, 6, 1), date(current_year, 12, 31)
+#     else:
+#         # 2nd Sem (Jan - May) -> SY is [Previous Year] to [Current Year]
+#         sy_start, sy_end = date(current_year - 1, 6, 1), date(current_year, 5, 31)
+#         cs_start, cs_end = date(current_year, 1, 1), date(current_year, 5, 31)
+
+#     # --- PART 2: GUARDIAN CHECK (STRICT SCHOOL YEARLY) ---
+#     guardian_Fname = form_data.get('guardian_fName')
+#     guardian_lName = form_data.get('guardian_lName')
+#     guardian_Mname = form_data.get('guardian_mName')
+#     guardian_name_ext = form_data.get('guardian_name_ext')
+
+#     guardian_filters = {
+#         'guardian_first_name__iexact': guardian_Fname,
+#         'guardian_last_name__iexact': guardian_lName,
+#     }
+
+#     if guardian_Mname:
+#         guardian_filters['guardian_middle_name__iexact'] = guardian_Mname
+#     if guardian_name_ext:
+#         guardian_filters['guardian_name_ext__iexact'] = guardian_name_ext
+
+#     # Updated: Checking if guardian exists within the calculated School Year (sy_start to sy_end)
+#     guardian_match = Applicants.objects.filter(
+#         **guardian_filters, 
+#         date_created__range=(sy_start, sy_end)
+#     ).first()
+
+#     if guardian_match:
+#         msg = "Sorry! A guardian with this name is already registered for this school year!"
+#         errors["guardian_fName"] = msg
+#         errors["guardian_lName"] = msg
+#         errors["guardian"] = msg
+#         if guardian_Mname:
+#             errors["guardian_mName"] = msg
+#         if guardian_name_ext:
+#             errors["guardian_name_ext"] = msg
+
+#     # --- PART 3: STUDENT CHECK (SEMESTER/YEAR LOGIC) ---
+#     student_filters = {
+#         'first_name__iexact': form_data.get('fName'),
+#         'last_name__iexact': form_data.get('lName'),
+#     }
+    
+#     mName = form_data.get('mName')
+#     if mName:
+#         student_filters['middle_name__icontains'] = mName
+
+#     # A. Check for any 'Approved' application in the current School Year
+#     has_approval_in_sy = Applicants.objects.filter(
+#         **student_filters,
+#         status="approved",
+#         date_created__range=(sy_start, sy_end)
+#     ).exists()
+
+#     if has_approval_in_sy:
+#         errors["datas"] = "You can only register once per school year if approved. An approved application already exists."
+    
+#     # B. If not already flagged by approval, check if they already applied this semester
+#     elif "datas" not in errors:
+#         has_entry_this_semester = Applicants.objects.filter(
+#             **student_filters,
+#             date_created__range=(cs_start, cs_end)
+#         ).exists()
+
+#         if has_entry_this_semester:
+#             errors["datas"] = "An application for this semester is already on file for this student."
+
 def _check_duplicates(form_data):
     """
-    Combined Logic:
-    1. Student Check: 1 per year if 'Approved', otherwise 1 per semester.
-    2. Guardian Check: Strictly 1 registration per SCHOOL YEAR based on Guardian Name.
+    Duplicate Check Logic (Updated):
+
+    1. Guardian Check: Strictly 1 registration per SCHOOL YEAR based on Guardian Name.
+       (School Year: June 1 to May 31 of the next year)
+
+    2. Student (Grantee) Check: Strictly 1 application per FISCAL YEAR 
+       (January 1 to December 31 of the same year), regardless of status or semester.
     """
     errors = {}
     now = timezone.now()
     current_year = now.year
 
-    # --- PART 1: PREPARE DATE BOUNDARIES ---
-    # School Year (SY) spans from June 1st to May 31st of the following year
+    # --- PART 1: SCHOOL YEAR BOUNDARIES (for Guardian check only) ---
     if now.month >= 6:
-        # 1st Sem (June - Dec) -> SY is [Current Year] to [Next Year]
-        sy_start, sy_end = date(current_year, 6, 1), date(current_year + 1, 5, 31)
-        cs_start, cs_end = date(current_year, 6, 1), date(current_year, 12, 31)
+        # Current School Year: e.g., June 2025 → SY 2025-2026
+        sy_start = date(current_year, 6, 1)
+        sy_end = date(current_year + 1, 5, 31)
     else:
-        # 2nd Sem (Jan - May) -> SY is [Previous Year] to [Current Year]
-        sy_start, sy_end = date(current_year - 1, 6, 1), date(current_year, 5, 31)
-        cs_start, cs_end = date(current_year, 1, 1), date(current_year, 5, 31)
+        # Current School Year: e.g., Jan-May 2025 → SY 2024-2025
+        sy_start = date(current_year - 1, 6, 1)
+        sy_end = date(current_year, 5, 31)
 
-    # --- PART 2: GUARDIAN CHECK (STRICT SCHOOL YEARLY) ---
-    guardian_Fname = form_data.get('guardian_fName')
-    guardian_lName = form_data.get('guardian_lName')
-    guardian_Mname = form_data.get('guardian_mName')
-    guardian_name_ext = form_data.get('guardian_name_ext')
+    # --- PART 2: FISCAL YEAR BOUNDARIES (for Student/Grantee check) ---
+    fy_start = date(current_year, 1, 1)
+    fy_end = date(current_year, 12, 31)
 
+    # --- GUARDIAN CHECK: 1 per School Year ---
     guardian_filters = {
-        'guardian_first_name__iexact': guardian_Fname,
-        'guardian_last_name__iexact': guardian_lName,
+        'guardian_first_name__iexact': form_data.get('guardian_fName'),
+        'guardian_last_name__iexact': form_data.get('guardian_lName'),
     }
 
-    if guardian_Mname:
-        guardian_filters['guardian_middle_name__iexact'] = guardian_Mname
-    if guardian_name_ext:
-        guardian_filters['guardian_name_ext__iexact'] = guardian_name_ext
+    guardian_mName = form_data.get('guardian_mName')
+    guardian_ext = form_data.get('guardian_name_ext')
 
-    # Updated: Checking if guardian exists within the calculated School Year (sy_start to sy_end)
+    if guardian_mName:
+        guardian_filters['guardian_middle_name__iexact'] = guardian_mName
+    if guardian_ext:
+        guardian_filters['guardian_name_ext__iexact'] = guardian_ext
+
     guardian_match = Applicants.objects.filter(
-        **guardian_filters, 
+        **guardian_filters,
         date_created__range=(sy_start, sy_end)
-    ).first()
+    ).exists()
 
     if guardian_match:
         msg = "Sorry! A guardian with this name is already registered for this school year!"
         errors["guardian_fName"] = msg
         errors["guardian_lName"] = msg
         errors["guardian"] = msg
-        if guardian_Mname:
+        if guardian_mName:
             errors["guardian_mName"] = msg
-        if guardian_name_ext:
+        if guardian_ext:
             errors["guardian_name_ext"] = msg
 
-    # --- PART 3: STUDENT CHECK (SEMESTER/YEAR LOGIC) ---
+    # --- STUDENT (GRANTEE) CHECK: 1 per Fiscal Year ONLY ---
     student_filters = {
         'first_name__iexact': form_data.get('fName'),
         'last_name__iexact': form_data.get('lName'),
     }
-    
-    mName = form_data.get('mName')
-    if mName:
-        student_filters['middle_name__icontains'] = mName
 
-    # A. Check for any 'Approved' application in the current School Year
-    has_approval_in_sy = Applicants.objects.filter(
+    student_mName = form_data.get('mName')
+    if student_mName:
+        student_filters['middle_name__iexact'] = student_mName  # Use iexact for consistency
+
+    # Check if this student already has ANY application in the current fiscal year
+    student_match_in_fy = Applicants.objects.filter(
         **student_filters,
-        status="approved",
-        date_created__range=(sy_start, sy_end)
+        date_created__range=(fy_start, fy_end)
     ).exists()
 
-    if has_approval_in_sy:
-        errors["datas"] = "You can only register once per school year if approved. An approved application already exists."
-    
-    # B. If not already flagged by approval, check if they already applied this semester
-    elif "datas" not in errors:
-        has_entry_this_semester = Applicants.objects.filter(
-            **student_filters,
-            date_created__range=(cs_start, cs_end)
-        ).exists()
-
-        if has_entry_this_semester:
-            errors["datas"] = "An application for this semester is already on file for this student."
+    if student_match_in_fy:
+        errors["datas"] = (
+            "This student is only eligible for one grant per fiscal year "
+            f"({current_year}). An application already exists for this year."
+        )
 
     return errors
+
+#     return errors
 def _save_and_check_slots(request, form_data, active_period):
     """SAVE + IMMEDIATE SLOT CHECK"""
 

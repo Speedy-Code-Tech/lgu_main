@@ -1,0 +1,5 @@
+tailwind
+django_browser_reload
+djangorestframework
+django-cors-headers
+mysqlclient

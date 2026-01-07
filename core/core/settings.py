@@ -14,8 +14,8 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # SECURITY
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','lgu_django_secret_key') 
 
-DEBUG = os.environ.get('DEBUG','True') == 'True'
-ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site', '127.0.0.1']
+DEBUG = True
+ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','www.labocamnorte.site', '127.0.0.1']
 
 dbPass = os.environ.get('DATABASE_PASSWORD','myPasswordLGU')
 
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     # TAILWIND + HOT RELOAD
     'tailwind',
     'theme',                           
-    'django_browser_reload',  
     # OTHERS UTILS
     'rest_framework', 
     'corsheaders',        
@@ -57,7 +56,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 NPM_BIN_PATH = "/usr/bin/npm"
 # Tailwind config
 TAILWIND_APP_NAME = 'theme'
-INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
+INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','https://lgu.labocamnorte.site','https://www.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
 
 # Middleware
 MIDDLEWARE = [
@@ -72,9 +71,12 @@ MIDDLEWARE = [
     # Hot reload middleware (only added below in DEBUG)
 ]
 
-# Add hot-reload only in DEBUG mode (and only once!)
 if DEBUG:
-    MIDDLEWARE += ['django_browser_reload.middleware.BrowserReloadMiddleware']
+    # Add django_browser_reload only in DEBUG mode
+    INSTALLED_APPS += ["django_browser_reload"]
+    MIDDLEWARE += [
+        "django_browser_reload.middleware.BrowserReloadMiddleware",
+    ]
 
 ROOT_URLCONF = 'core.urls'
 
