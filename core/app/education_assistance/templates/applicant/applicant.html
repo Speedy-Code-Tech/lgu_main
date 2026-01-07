@@ -241,12 +241,12 @@
                 </div>
 
             <!-- SUBMIT BUTTON -->
-            <div class="text-center">
-                <button type="submit" id="submit-btn"
-                        class="cursor-pointer px-6 py-3 bg-green-500 text-white font-semibold rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    SUBMIT APPLICATION
-                </button>
-            </div>
+                <div class="text-center pt-6">
+                        <button type="submit" id="submit-btn" disabled
+                                class="btn btn-wide btn-success text-lg px-10 py-4">
+                            SUBMIT APPLICATION
+                        </button>
+                    </div>
         </form>
     </section>
     {% else %}
@@ -338,89 +338,73 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('form');
-        const modal = document.getElementById('confirm-modal');
+  document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('application-form');
+        const confirmModal = document.getElementById('confirm-modal');
         const modalContent = document.getElementById('modal-content');
-        const confirmSubmitBtn = document.getElementById('confirm-submit');
-        const errorAlert = document.getElementById('error-alert-container');
-
-        // Privacy-related elements
+        const confirmSubmit = document.getElementById('confirm-submit');
         const privacyModal = document.getElementById('privacy-modal');
         const openPrivacyLink = document.getElementById('open-privacy-modal');
         const privacyCheckbox = document.getElementById('privacy-consent');
         const submitBtn = document.getElementById('submit-btn');
+        const errorAlert = document.getElementById('error-alert-container');
 
-        // --- Alert Fading Logic ---
+        // Fade out error alert after 5 seconds
         if (errorAlert) {
             setTimeout(() => {
-                errorAlert.classList.remove('opacity-100');
-                errorAlert.classList.add('opacity-0');
+                errorAlert.style.opacity = '0';
                 setTimeout(() => errorAlert.remove(), 1000);
-            }, 3000);
+            }, 5000);
         }
 
-        // --- Privacy Modal Open ---
-        openPrivacyLink.addEventListener('click', function (e) {
+        // Privacy modal trigger
+        openPrivacyLink.addEventListener('click', (e) => {
             e.preventDefault();
             privacyModal.showModal();
         });
 
-        // --- Enable/Disable Submit Button based on Privacy Consent ---
+        // Enable submit button only when privacy is checked
         privacyCheckbox.addEventListener('change', function () {
             submitBtn.disabled = !this.checked;
         });
 
-        // --- Form Submit: Confirmation Modal ---
+        // Form submission → open confirmation
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Check if privacy consent is given
             if (!privacyCheckbox.checked) {
-               Swal.fire({
-            icon: 'info',
-            text: 'Please read and agree to the Data Privacy Notice and Terms & Conditions before submitting.'
-          })
-                //   {% comment %} alert('Please read and agree to the Data Privacy Notice and Terms & Conditions before submitting.'); {% endcomment %}
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Consent Required',
+                    text: 'Please read and agree to the Data Privacy Notice before submitting.',
+                });
                 return;
             }
 
-            // Get barangay text safely
-            const brgySelect = form.brgy;
-            const brgyText = brgySelect.selectedIndex >= 0 
-                ? brgySelect.options[brgySelect.selectedIndex].text 
-                : '';
+            const brgyText = form.brgy.options[form.brgy.selectedIndex]?.text || '';
+            const levelText = form.level.options[form.level.selectedIndex]?.text || '';
 
-            // Get educational level text
-            const levelSelect = form.level;
-            const levelText = levelSelect.selectedIndex >= 0 
-                ? levelSelect.options[levelSelect.selectedIndex].text 
-                : '';
-
-            // Populate confirmation modal with complete data
             modalContent.innerHTML = `
-                <div class="space-y-3 text-left">
-                    <p><strong>Full Name:</strong> ${form.fname.value.trim()} ${form.mname.value.trim() || ''} ${form.lname.value.trim()} ${form.name_ext.value.trim() || ''}</p>
-                    <p><strong>Email:</strong> ${form.email.value || 'Not provided'}</p>
-                    <p><strong>Contact No.:</strong> ${form.contact.value}</p>
-                    <p><strong>4Ps Beneficiary:</strong> ${form.is_four.value === '1' ? 'Yes' : 'No'}</p>
-                    <p><strong>Educational Level:</strong> ${levelText}</p>
-                    <p><strong>Year/Grade:</strong> ${form.grade.value}</p>
-                    <p><strong>School:</strong> ${form.school.value}</p>
-                    
-                    <hr class="my-4 border-gray-300">
-                    
-                    <p><strong>Guardian Name:</strong> ${form.guardian_fname.value.trim()} ${form.guardian_mname.value.trim() || ''} ${form.guardian_lname.value.trim()} ${form.guardian_name_ext.value.trim() || ''}</p>
-                    <p><strong>Address:</strong> Purok ${form.purok.value.trim()}, ${brgyText}, ${form.province.value.trim()}</p>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div><strong>Full Name:</strong><br>${[form.fname.value, form.mname.value, form.lname.value, form.name_ext.value].filter(Boolean).join(' ')}</div>
+                        <div><strong>Contact:</strong><br>${form.contact.value} ${form.email.value ? '<br>' + form.email.value : ''}</div>
+                        <div><strong>4Ps Beneficiary:</strong><br>${form.is_four.value === '1' ? 'Yes' : 'No'}</div>
+                        <div><strong>Level:</strong><br>${levelText}</div>
+                        <div><strong>Year/Grade:</strong><br>${form.grade.value}</div>
+                        <div><strong>School:</strong><br>${form.school.value}</div>
+                        <div class="md:col-span-2"><strong>Guardian:</strong><br>${[form.guardian_fname.value, form.guardian_mname.value, form.guardian_lname.value, form.guardian_name_ext.value].filter(Boolean).join(' ')}</div>
+                        <div class="md:col-span-2"><strong>Address:</strong><br>Purok ${form.purok.value}, ${brgyText}, Labo, Camarines Norte</div>
+                    </div>
                 </div>
             `;
 
-            modal.showModal();
+            confirmModal.showModal();
         });
 
-        // --- Final Submission on Confirmation ---
-        confirmSubmitBtn.addEventListener('click', function () {
-            form.submit(); // Actually submit the form to the server
+        // Confirm → actual submit
+        confirmSubmit.addEventListener('click', () => {
+            form.submit();
         });
     });
 </script>

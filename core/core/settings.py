@@ -55,7 +55,8 @@ if DEBUG:
     INSTALLED_APPS += ["django_browser_reload"]
 
 CORS_ALLOW_ALL_ORIGINS = True
-NPM_BIN_PATH = "/usr/bin/npm"
+# NPM_BIN_PATH = "/usr/bin/npm"
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 # Tailwind config
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','https://lgu.labocamnorte.site','https://www.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
@@ -127,7 +128,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # IMPORTANT: tell Django it is running u
 # Static & Media
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 MEDIA_URL = '/media/'
