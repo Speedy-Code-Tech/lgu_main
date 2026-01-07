@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'rest_framework', 
     'corsheaders',        
 ]
+if DEBUG:
+    INSTALLED_APPS += ["django_browser_reload"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 NPM_BIN_PATH = "/usr/bin/npm"
@@ -72,8 +74,6 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    # Add django_browser_reload only in DEBUG mode
-    INSTALLED_APPS += ["django_browser_reload"]
     MIDDLEWARE += [
         "django_browser_reload.middleware.BrowserReloadMiddleware",
     ]
