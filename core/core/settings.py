@@ -72,7 +72,12 @@ MIDDLEWARE = [
     # Hot reload middleware (only added below in DEBUG)
 ]
 
-
+# if DEBUG:
+#     # Add django_browser_reload only in DEBUG mode
+#     INSTALLED_APPS += ["django_browser_reload"]
+#     MIDDLEWARE += [
+#         "django_browser_reload.middleware.BrowserReloadMiddleware",
+#     ]
 
 ROOT_URLCONF = 'core.urls'
 

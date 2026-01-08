@@ -7,26 +7,32 @@
 
 {% block main %}
   <div class="w-full">
-    <header class=" py-5 sm:py-5 flex flex-col justify-center ps-10 items-center bg-cover bg-center bg-no-repeat" style="background-image: url('{% static 'applicant/images/header.png' %}');">
+    <header class=" py-5 sm:py-5 flex flex-col justify-center  px-3 sm:ps-10 items-center bg-cover bg-center bg-no-repeat" style="background-image: url('{% static 'applicant/images/header.png' %}');">
       <img src="{% static 'icon.png' %}" class="w-24 pb-3" alt="" />
       <div class="flex flex-col justify-center items-center">
-        <p class="text-lg sm:text-3xl md:text-5xl text-amber-50 font-bold drop-shadow-lg">Your Application has Been Submitted!</p>
-       
+        <p class="text-lg text-center sm:text-3xl md:text-5xl text-amber-50 font-bold drop-shadow-lg">Your Application has Been Submitted!</p>
+        <span class="text-sm text-center sm:text-md md:text-lg text-amber-50  drop-shadow-lg pt-5">Standy for our announcement of the status of your application. <br>
+Please follow: <strong><a href="https://www.facebook.com/lgu.labo.hrmo" target="_blank" class="text-green-500">LGU Labo HRMO</a></strong> facebook account for updates</span>
       </div>
     </header>
-    <main class="w-full px-0 md:px-[15%] pt-10 text-2xl flex flex-col gap-5">
+    <main class="w-full  text-2xl flex flex-col gap-5 " style="padding: 20px 15%;">
      
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">Name:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.first_name }} {{ data.middle_name }} {{ data.last_name }} {{ data.ext_name }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center text-md md:text-start w-full md:w-1/2">Name:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3">{{ data.first_name }} {{ data.middle_name }} {{ data.last_name }} {{ data.ext_name }}</p>
       </div>
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">Email:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.email }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/2">Email:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3 
+">{{ data.email }}</p>
       </div>
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">Contact No:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.contact }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/3">Contact No:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3">{{ data.contact }}</p>
       </div>
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">4Ps Beneficiary:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/2">4Ps Beneficiary:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3">
           {% if is_four %}
             Yes
           {% else %}
@@ -34,18 +40,22 @@
           {% endif %}
         </p>
       </div>
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">Grade:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.grade }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/2">Grade:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3">{{ data.grade }}</p>
       </div>
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">School:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.school }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/2">School:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3">{{ data.school }}</p>
       </div>
          
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">Guardian Name:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.guardian_first_name }} {{ data.guardian_middle_name }} {{ data.guardian_last_name }} {{ data.guardian_ext_name }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/2">Guardian Name:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3">{{ data.guardian_first_name }} {{ data.guardian_middle_name }} {{ data.guardian_last_name }} {{ data.guardian_ext_name }}</p>
       </div>
-      <div class="flex justify-around flex-col md:flex-row">
-        <p class="font-bold text-center md:text-start w-full md:w-1/2">Address:</p> <p class="text-center pb-5 md:pb-0 md:text-end w-full md:w-1/2">{{ data.full_address }}</p>
+      <div class="w-full flex justify-around flex-col md:flex-row">
+        <p class="text-sm sm:text-lg md:text-lg font-bold text-center md:text-start w-full md:w-1/2">Address:</p> 
+        <p class="text-sm sm:text-lg md:text-lg text-center pb-0 md:pb-0 md:text-end w-full md:w-1/3  wrap-break-word whitespace-normal">{{ data.full_address }}</p>
       </div>
       <div class="w-full h-[2px] bg-green-500 rounded-4xl"></div>
      <a href="https://labocamnorte.site/" class="text-center block  text-lg font-semibold text-green-600 hover:text-green-800 mt-3">

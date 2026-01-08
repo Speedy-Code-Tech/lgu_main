@@ -1,7 +1,11 @@
 from django.db import models
 from app.main.models import Barangay
-
+import uuid
 class Applicants(models.Model):
+    uid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False
+    )
     scholar_id = models.CharField(max_length=250,null=True)
     last_name = models.CharField(max_length=75)
     first_name = models.CharField(max_length=75)
@@ -21,9 +25,9 @@ class Applicants(models.Model):
     province = models.CharField(max_length=250,default="Labo Camarines Norte")
     brgy = models.ForeignKey(Barangay,on_delete=models.CASCADE,null=True)
     purok = models.CharField(max_length=250,null=True)
+    level = models.CharField(max_length=250,null=True)
     date_created = models.DateField(auto_now_add=True,null=True,editable=False)
     date_approved = models.DateTimeField(null=True,editable=False)
-     
     @property
     def full_name(self):
         name = [self.last_name.strip()]

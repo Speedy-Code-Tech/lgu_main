@@ -113,6 +113,7 @@ def _handle_post(request, active_period):
         'school': request.POST.get("school", "").strip(),
         'province': request.POST.get("province", "").strip(),
         'name_ext': request.POST.get("name_ext", "").strip(),
+        'level': request.POST.get("level", "").strip(),
         'brgy': brgy_id,
         'purok': request.POST.get("purok", "").strip(),
         'is_four': request.POST.get("is_four", "").strip(),
@@ -163,6 +164,7 @@ def _handle_post1(request, active_period):
         'lName': request.POST.get("lname", "").strip(),
         'email': request.POST.get("email", "").strip().lower(),
         'contact': request.POST.get("contact", "").strip(),
+        'level': request.POST.get("level", "").strip(),
         'grade': request.POST.get("grade", "").strip(),
         'school': request.POST.get("school", "").strip(),
         'province': request.POST.get("province", "").strip(),
@@ -202,6 +204,7 @@ def _validate_form(form_data):
     
     if not form_data['fName']: errors["fName"] = "First Name is Required."
     if not form_data['lName']: errors["lName"] = "Last Name is Required."
+
     if not form_data['guardian_fName']: errors["guardian_fName"] = "Guardian First Name is Required."
     if not form_data['guardian_lName']: errors["guardian_lName"] = "Guardian Last Name is Required."
   
@@ -216,7 +219,7 @@ def _validate_form(form_data):
     if not form_data['brgy']: errors["brgy"] = "Barangay is Required."
     if not form_data['purok']: errors["purok"] = "Purok is Required."
     if not form_data['is_four']: errors["is_four"] = "Please Select a Value."
-    
+    if not form_data['level']: errors["level"] = "Level is Required."
   
     return errors
 
@@ -465,6 +468,7 @@ def _save_and_check_slots(request, form_data, active_period):
                 guardian_middle_name=form_data['guardian_mName'],
                 guardian_last_name=form_data['guardian_lName'],
                 guardian_name_ext=form_data['guardian_name_ext'],
+                level=form_data['level'],
             )
         
         # **FRESH COUNT AFTER SAVE**
@@ -495,9 +499,11 @@ def _save_and_check_slots(request, form_data, active_period):
             "purok":"",
             "is_four":""
         }
-        return redirect("education:receipt",id=school)
+        return redirect("education:receipt",id=applicant.uid)
         
     except Exception as e:
+        brgy = Barangay.objects.all()
+
         print(f"Error: {e}")
         total_apps = Applicants.objects.count()
         errors = {"general": "An error occurred. Please try again."}
@@ -537,6 +543,7 @@ def _save_and_check_slots1(request, form_data, active_period):
                 guardian_middle_name=form_data['guardian_mName'],
                 guardian_last_name=form_data['guardian_lName'],
                 guardian_name_ext=form_data['guardian_name_ext'],
+                level=form_data['level'],
             )
         
         # **FRESH COUNT AFTER SAVE**
@@ -585,7 +592,7 @@ def _save_and_check_slots1(request, form_data, active_period):
 
 
 def receipt(request,id):
-    app = Applicants.objects.get(scholar_id=id)
+    app = get_object_or_404(Applicants, uid=id)
     context = {
         "data":app
     }

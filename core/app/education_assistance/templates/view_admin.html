@@ -226,19 +226,21 @@
 
   <script>
     $(document).ready(function () {
-      var table = $('#educationtable').DataTable({
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100, 'All'],
-        order: [[2, 'asc']], // Sort by Scholar ID
-        scrollX: true,
-        columnDefs: [{ orderable: false, targets: 0 }], // Disable sorting on checkbox column
-        language: {
+
+       var table = $('#educationtable').DataTable({
+        pageLength: 25, // Higher default to reduce page flipping
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        deferRender: true, // IMPORTANT: Only renders rows when needed
+        order: [[2, 'asc']],
+        columnDefs: [{ orderable: false, targets: 0 }],
+          language: {
           search: 'Search Scholar Applicant:',
           lengthMenu: 'Show _MENU_ scholars',
           info: 'Showing _START_ to _END_ of _TOTAL_ applicants',
           zeroRecords: 'No matching records found'
-        }
-      })
+        },
+        scrollX: true,
+      });
     
       // Select All Checkbox
       $('#select-all').on('click', function () {
