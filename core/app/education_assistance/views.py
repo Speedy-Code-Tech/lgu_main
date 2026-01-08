@@ -47,14 +47,15 @@ def store(request):
 
     # **1. DATE CHECK**
     if not active_period or not (active_period.open_date <= current_date <= active_period.close_date):
-        return render(request, "applicant/create_applicant.html", {"display": "closed","brgys":brgy})
+        # return render(request, "applicant/create_applicant.html", {"display": "closed","brgys":brgy})
 
 
     # **3. FORM HANDLING**
     if request.method == 'POST':
         return _handle_post1(request, active_period)
     else:
-        return render(request,'applicant/create_applicant.html',{"active":'education',"brgys":brgys})
+        return False
+        # return render(request,'applicant/create_applicant.html',{"active":'education',"brgys":brgys})
 
 
 
