@@ -47,15 +47,14 @@ def store(request):
 
     # **1. DATE CHECK**
     if not active_period or not (active_period.open_date <= current_date <= active_period.close_date):
-        # return render(request, "applicant/create_applicant.html", {"display": "closed","brgys":brgy})
+        return render(request, "applicant/create_applicant.html", {"display": "closed","brgys":brgy})
 
 
     # **3. FORM HANDLING**
     if request.method == 'POST':
-        return _handle_post1(request, active_period)
+        return _handle_post1(request, True)
     else:
-        return False
-        # return render(request,'applicant/create_applicant.html',{"active":'education',"brgys":brgys})
+        return render(request,'applicant/create_applicant.html',{"active":'education',"brgys":brgys})
 
 
 
@@ -559,8 +558,8 @@ def _save_and_check_slots1(request, form_data, active_period):
             'email': form_data['email'],
             'total_apps': total_apps,
             'count': total_apps,
-            'open_date': active_period.open_date,
-            'close_date': active_period.close_date,
+            'open_date': "",
+            'close_date': "",
             "first_name":"",
             "middle_name":"",
             "last_name":"",
