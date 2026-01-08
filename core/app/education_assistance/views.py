@@ -27,7 +27,7 @@ def is_hrmo(user):
 @user_passes_test(is_hrmo,login_url='/')
 
 def view(request):
-    applicants = Applicants.objects.exclude(status='deleted')
+    applicant = Applicants.objects.exclude(status='deleted')
     return render(request,'view_admin.html',{"active":'education',"applicants":applicant})
 
 
