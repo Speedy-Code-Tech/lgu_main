@@ -45,14 +45,11 @@ def store(request):
     except DataEntryPeriod.DoesNotExist:
         active_period = None
 
-    # **1. DATE CHECK**
-    if not active_period or not (active_period.open_date <= current_date <= active_period.close_date):
-        return render(request, "applicant/create_applicant.html", {"display": "closed","brgys":brgy})
-
+  
 
     # **3. FORM HANDLING**
     if request.method == 'POST':
-        return _handle_post1(request, True)
+        return _handle_post1(request)
     else:
         return render(request,'applicant/create_applicant.html',{"active":'education',"brgys":brgys})
 
@@ -142,7 +139,7 @@ def _handle_post(request, active_period):
     # **SUCCESS - SAVE & CHECK SLOTS AGAIN**
     return _save_and_check_slots(request, form_data, active_period)
 
-def _handle_post1(request, active_period):
+def _handle_post1(request):
     """Handle POST - Always check slots FRESH"""
     
     # **FRESH SLOT CHECK - CRITICAL!**
@@ -194,7 +191,7 @@ def _handle_post1(request, active_period):
         })
     
     # **SUCCESS - SAVE & CHECK SLOTS AGAIN**
-    return _save_and_check_slots1(request, form_data, active_period)
+    return _save_and_check_slots1(request, form_data)
 
 
 def _validate_form(form_data):
@@ -374,11 +371,9 @@ def _check_duplicates(form_data):
 
     # --- PART 1: SCHOOL YEAR BOUNDARIES (for Guardian check only) ---
     if now.month >= 6:
-        # Current School Year: e.g., June 2025 → SY 2025-2026
         sy_start = date(current_year, 6, 1)
         sy_end = date(current_year + 1, 5, 31)
     else:
-        # Current School Year: e.g., Jan-May 2025 → SY 2024-2025
         sy_start = date(current_year - 1, 6, 1)
         sy_end = date(current_year, 5, 31)
 
@@ -391,7 +386,6 @@ def _check_duplicates(form_data):
         'guardian_first_name__iexact': form_data.get('guardian_fName'),
         'guardian_last_name__iexact': form_data.get('guardian_lName'),
     }
-
     guardian_mName = form_data.get('guardian_mName')
     guardian_ext = form_data.get('guardian_name_ext')
 
@@ -403,7 +397,7 @@ def _check_duplicates(form_data):
     guardian_match = Applicants.objects.filter(
         **guardian_filters,
         date_created__range=(sy_start, sy_end)
-    ).exists()
+    ).exclude(status='deleted').exists()  # <-- exclude deleted
 
     if guardian_match:
         msg = "Sorry! A guardian with this name is already registered for this school year!"
@@ -420,21 +414,19 @@ def _check_duplicates(form_data):
         'first_name__iexact': form_data.get('fName'),
         'last_name__iexact': form_data.get('lName'),
     }
-
     student_mName = form_data.get('mName')
     if student_mName:
-        student_filters['middle_name__iexact'] = student_mName  # Use iexact for consistency
+        student_filters['middle_name__iexact'] = student_mName
 
-    # Check if this student already has ANY application in the current fiscal year
     student_match_in_fy = Applicants.objects.filter(
         **student_filters,
         date_created__range=(fy_start, fy_end)
-    ).exists()
+    ).exclude(status='deleted').exists()  # <-- exclude deleted
 
     if student_match_in_fy:
         errors["datas"] = (
-            "This student is only eligible for one grant per fiscal year "
-            f"({current_year}). An application already exists for this year."
+            f"This student is only eligible for one grant per fiscal year ({current_year}). "
+            "An application already exists for this year."
         )
 
     return errors
@@ -516,7 +508,7 @@ def _save_and_check_slots(request, form_data, active_period):
 
 
 
-def _save_and_check_slots1(request, form_data, active_period):
+def _save_and_check_slots1(request, form_data):
     """SAVE + IMMEDIATE SLOT CHECK"""
     try:
         with transaction.atomic():

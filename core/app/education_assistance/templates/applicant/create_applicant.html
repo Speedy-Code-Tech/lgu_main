@@ -23,7 +23,7 @@
               
             </div>
  <section class="p-5">
-    <form action="{% url 'education:create' %}" id="form" method="post" novalidate>
+    <form action="{% url 'education:create' %}" id="form" method="post" >
             {% csrf_token %}
             <p class="text-2xl font-semibold text-green-800 pb-5"><i class="fas fa-user"></i> Personal Information</p>
             <!-- NAME ROW -->
