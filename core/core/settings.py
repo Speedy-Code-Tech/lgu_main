@@ -14,7 +14,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # SECURITY
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','lgu_django_secret_key') 
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG','false').lower() == 'true'
 ALLOWED_HOSTS = ['localhost','lgu.labocamnorte.site','https://lgu.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','www.labocamnorte.site', '127.0.0.1']
 
 dbPass = os.environ.get('DATABASE_PASSWORD','myPasswordLGU')
@@ -53,8 +53,8 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-# NPM_BIN_PATH = "/usr/bin/npm"
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+NPM_BIN_PATH = "/usr/bin/npm"
+# NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 # Tailwind config
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = ['127.0.0.1','lgu.labocamnorte.site','https://lgu.labocamnorte.site','https://www.labocamnorte.site','labocamnorte.site','https://labocamnorte.site','192.168.1.22','192.168.1.77']  # Required for django-browser-reload
@@ -123,12 +123,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # IMPORTANT: tell Django it is running u
 # Static & Media
 STATIC_URL = '/static/'
-if DEBUG:
-    STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-
+STATICFILES_DIRS = [BASE_DIR / 'static']          # Your source static files
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
