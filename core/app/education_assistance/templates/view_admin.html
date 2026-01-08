@@ -103,8 +103,8 @@
                     <th class="px-4 py-3 text-center font-medium text-gray-700">Email</th>
                     <th class="px-4 py-3 text-center font-medium text-gray-700">Guardian</th>
                     <th class="px-4 py-3 text-center font-medium text-gray-700">Contact</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-700">Date Applied</th>
                     <th class="px-4 py-3 text-center font-medium text-gray-700">Address</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-700">Date Applied</th>
                     <th class="px-4 py-3 text-center font-medium text-gray-700">Status</th>
                     <th class="px-4 py-3 text-center font-medium text-gray-700">Actions</th>
                   </tr>
@@ -115,13 +115,13 @@
                       <td class="px-4 py-3 text-center">
                         <input type="checkbox" name="applicant-id" value="{{ applicant.id }}" class="checkbox checkbox-sm row-checkbox" />
                       </td>
-                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ forloop.counter }}</td>
-                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.scholar_id }}</td>
+                      <td class="uppercase px-4 py-3 text-center whitespace-nowrap">{{ forloop.counter }}</td>
+                      <td class="uppercase px-4 py-3 text-center whitespace-nowrap">{{ applicant.scholar_id }}</td>
                       <td class="px-4 py-3">
-                        <div class="truncate max-w-xs">{{ applicant.full_name }}</div>
+                        <div class="uppercase truncate max-w-xs">{{ applicant.full_name }}</div>
                       </td>
-                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.grade }}</td>
-                      <td class="px-4 py-3 truncate max-w-[150px]">{{ applicant.school }}</td>
+                      <td class="uppercase px-4 py-3 whitespace-nowrap">{{ applicant.grade }}</td>
+                      <td class="uppercase px-4 py-3 truncate whitespace-nowrap">{{ applicant.school }}</td>
                       <td class="px-4 py-3 text-center">
                         {% if applicant.is_four %}
                           <span class="badge badge-success">YES</span>
@@ -129,12 +129,12 @@
                           <span class="badge badge-error">NO</span>
                         {% endif %}
                       </td>
-                      <td class="px-4 py-3 truncate max-w-xs" title="{{ applicant.email }}">{{ applicant.email }}</td>
-                      <td class="px-4 py-3 text-center">{{ applicant.guardian_full_name }}</td>
-                      <td class="px-4 py-3 text-center whitespace-nowrap">{{ applicant.contact }}</td>
-                      <td class="px-4 py-3 truncate max-w-xs">{{ applicant.full_address }}</td>
-                      <td class="px-4 py-3 truncate max-w-xs">{{ applicant.date_created|date:'Y-m-d' }}</td>
-                      <td class="px-4 py-3 truncate max-w-xs">
+                      <td class="uppercase px-4 py-3 truncate whitespace-nowrap" title="{{ applicant.email }}">{{ applicant.email }}</td>
+                      <td class="uppercase px-4 py-3  whitespace-nowrap">{{ applicant.guardian_full_name }}</td>
+                      <td class="uppercase px-4 py-3 text-center whitespace-nowrap">{{ applicant.contact }}</td>
+                      <td class="uppercase px-4 py-3 truncate whitespace-nowrap">{{ applicant.full_address }}</td>
+                      <td class="uppercase px-4 py-3 truncate max-w-xs">{{ applicant.date_created|date:'Y-m-d' }}</td>
+                      <td class="uppercase px-4 py-3 truncate max-w-xs">
                         {% if applicant.status == None or applicant.status == 'None' %}
                           <span class="text-yellow-500 font-extrabold py-2">PENDING</span>
                         {% elif applicant.status == 'disapproved' %}
@@ -145,7 +145,7 @@
                       </td>
                       <td class="px-4 py-3 text-center">
                         <div class="flex justify-center gap-2">
-                          <a href="{% url 'education:receipt' applicant.scholar_id %}" class="btn btn-xs btn-info" target="_blank">View</a>
+                          <a href="{% url 'education:receipt' applicant.uid %}" class="btn btn-xs btn-info" target="_blank">View</a>
                           {% if is_Admin %}
                             {% comment %} <a href="{% url 'education:edit' applicant.id %}" class="btn btn-xs btn-warning">Edit</a>
                             <a href="{% url 'education:delete' applicant.id %}" class="btn btn-xs btn-error" onclick="return confirm('Delete this applicant?')">Delete</a> {% endcomment %}
