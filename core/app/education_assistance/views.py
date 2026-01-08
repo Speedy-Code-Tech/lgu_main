@@ -27,8 +27,7 @@ def is_hrmo(user):
 @user_passes_test(is_hrmo,login_url='/')
 
 def view(request):
-    applicant = Applicants.objects.all()      
-    
+    applicants = Applicants.objects.exclude(status='deleted')
     return render(request,'view_admin.html',{"active":'education',"applicants":applicant})
 
 
@@ -613,7 +612,7 @@ def bulk_action(request):
         elif action == 'disapprove':
             applicants.update(status='disapproved',date_approved = timezone.now())
         elif action == 'delete':
-            applicants.delete()
+            applicants.update(status='deleted',date_approved = timezone.now())
 
         messages.success(request, f'{action.capitalize()} action completed.')
         return redirect('education:view')
