@@ -25,7 +25,7 @@ def dashboard(request):
         
     education_count = Education.objects.filter(
      date_created__range=[start_date, end_date]
-    ).count()
+    ).exclude(status='deleted').count()
     
     
     procurement_count = Procurement.objects.count()
@@ -51,7 +51,9 @@ def dashboard(request):
             employee_count = 0
 
     # === Status Chart Data ===
-    pending_count = Education.objects.filter(status__isnull=True,   date_created__range=[start_date, end_date]).count()
+    pending_count = Education.objects.filter(
+    status__isnull=True,  # or status='' if you use empty string for pending
+    date_created__range=[start_date, end_date]).exclude(status='deleted').count()
     approved_count = Education.objects.filter(status="approved",   date_created__range=[start_date, end_date]).count()
     disapproved_count = Education.objects.filter(status="disapproved",   date_created__range=[start_date, end_date]).count()
 
@@ -61,7 +63,7 @@ def dashboard(request):
     all_barangays = Barangay.objects.all().order_by('name')
 
     # Get counts efficiently in one query
-    applicant_counts = Education.objects.filter(  date_created__range=[start_date, end_date]).values('brgy_id') \
+    applicant_counts = Education.objects.filter(  date_created__range=[start_date, end_date]).exclude(status='deleted').values('brgy_id') \
                                         .annotate(count=Count('id')) \
                                         .values_list('brgy_id', 'count')
     count_dict = dict(applicant_counts or {})  # Handle empty case

@@ -52,13 +52,18 @@
         <p class="ps-2 border-s-2 font-bold border-green-500 text-stone-900 text-xl sm:text-2xl md:text-3xl">Requirement/s</p>
         <ul class="pt-5 ps-8 flex flex-col gap-4 list-decimal">
             <li>Certificates of Grades reflecting the general weighted average or photocopy of the Report Card except for ALS passer-applicants.</li>
-            <li>ALS pseer applicants shall present the A & E results.</li>
+            <li>ALS passer applicants shall present the A & E results.</li>
             <li>Barangay Residency stating that the parents/guardians of the grantee are residents of the barangay and stating further that they belong to indigent families.</li>
             <li>Self declaration of parent/guardian that their family is not a recipient of 4Ps program subscribe before the Municipal Mayor.</li>
             <li>Certificate of Enrollment or Matriculation Form, whatever is applicable.</li>
+         
+
+
         </ul>
     </article>
-
+<div class="w-full flex flex-col pt-5 justify-center items-center">
+    <p class="italic font-semibold text-lg text-red-500 sm:text-xl text-center lg:text-2xl px-5">-- Requirements will only be processed once a slot is confirmed --</p>
+</div>
     <div class="w-full flex flex-col pt-10 justify-center items-center">
         <p class="font-bold text-lg sm:text-xl text-center lg:text-3xl px-5">GRANTEE ARE ELIGIBLE ONE PER FISCAL YEAR</p>
         <div class="border-b-2 border-green-500 w-[60%] mt-4"></div>
@@ -356,75 +361,79 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('application-form');
-        const confirmModal = document.getElementById('confirm-modal');
-        const modalContent = document.getElementById('modal-content');
-        const confirmSubmit = document.getElementById('confirm-submit');
-        const privacyModal = document.getElementById('privacy-modal');
-        const openPrivacyLink = document.getElementById('open-privacy-modal');
-        const privacyCheckbox = document.getElementById('privacy-consent');
-        const submitBtn = document.getElementById('submit-btn');
-        const errorAlert = document.getElementById('error-alert-container');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('form'); // ← FIXED: was 'application-form'
+            const confirmModal = document.getElementById('confirm-modal');
+            const modalContent = document.getElementById('modal-content');
+            const confirmSubmit = document.getElementById('confirm-submit');
+            const privacyModal = document.getElementById('privacy-modal');
+            const openPrivacyLink = document.getElementById('open-privacy-modal');
+            const privacyCheckbox = document.getElementById('privacy-consent');
+            const submitBtn = document.getElementById('submit-btn');
+            const errorAlert = document.getElementById('error-alert-container');
 
-        // Fade out error alert after 5 seconds
-        if (errorAlert) {
-            setTimeout(() => {
-                errorAlert.style.opacity = '0';
-                setTimeout(() => errorAlert.remove(), 1000);
-            }, 5000);
-        }
-
-        // Privacy modal trigger
-        openPrivacyLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            privacyModal.showModal();
-        });
-
-        // Enable submit button only when privacy is checked
-        privacyCheckbox.addEventListener('change', function () {
-            submitBtn.disabled = !this.checked;
-        });
-
-        // Form submission → open confirmation
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!privacyCheckbox.checked) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Consent Required',
-                    text: 'Please read and agree to the Data Privacy Notice before submitting.',
-                });
-                return;
+            // Fade out error alert
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.opacity = '0';
+                    setTimeout(() => errorAlert.remove(), 1000);
+                }, 5000);
             }
 
-            const brgyText = form.brgy.options[form.brgy.selectedIndex]?.text || '';
-            const levelText = form.level.options[form.level.selectedIndex]?.text || '';
+            // Privacy modal open
+            if (openPrivacyLink) {
+                openPrivacyLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    privacyModal.showModal();
+                });
+            }
 
-            modalContent.innerHTML = `
-                <div class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><strong>Full Name:</strong><br>${[form.fname.value, form.mname.value, form.lname.value, form.name_ext.value].filter(Boolean).join(' ')}</div>
-                        <div><strong>Contact:</strong><br>${form.contact.value} ${form.email.value ? '<br>' + form.email.value : ''}</div>
-                        <div><strong>4Ps Beneficiary:</strong><br>${form.is_four.value === '1' ? 'Yes' : 'No'}</div>
-                        <div><strong>Level:</strong><br>${levelText}</div>
-                        <div><strong>Year/Grade:</strong><br>${form.grade.value}</div>
-                        <div><strong>School:</strong><br>${form.school.value}</div>
-                        <div class="md:col-span-2"><strong>Guardian:</strong><br>${[form.guardian_fname.value, form.guardian_mname.value, form.guardian_lname.value, form.guardian_name_ext.value].filter(Boolean).join(' ')}</div>
-                        <div class="md:col-span-2"><strong>Address:</strong><br>Purok ${form.purok.value}, ${brgyText}, Labo, Camarines Norte</div>
-                    </div>
-                </div>
-            `;
+            // Enable submit button based on checkbox
+            function updateSubmitButton() {
+                submitBtn.disabled = !privacyCheckbox.checked;
+            }
+            privacyCheckbox.addEventListener('change', updateSubmitButton);
+            updateSubmitButton(); // Run on load
 
-            confirmModal.showModal();
+            // Form submit → confirmation modal
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                if (!privacyCheckbox.checked) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Consent Required',
+                        text: 'Please read and agree to the Data Privacy Notice before submitting.',
+                    });
+                    return;
+                }
+
+                const brgyText = form.brgy.options[form.brgy.selectedIndex]?.text || '';
+                const levelText = form.level.options[form.level.selectedIndex]?.text || '';
+
+                modalContent.innerHTML = `
+            <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div><strong>Full Name:</strong><br>${[form.fname.value, form.mname.value, form.lname.value, form.name_ext.value].filter(Boolean).join(' ')}</div>
+                <div><strong>Contact:</strong><br>${form.contact.value} ${form.email.value ? '<br>Email: ' + form.email.value : ''}</div>
+                <div><strong>4Ps Beneficiary:</strong><br>${form.is_four.value === '1' ? 'Yes' : 'No'}</div>
+                <div><strong>Level:</strong><br>${levelText}</div>
+                <div><strong>Year/Grade:</strong><br>${form.grade.value}</div>
+                <div><strong>School:</strong><br>${form.school.value}</div>
+                <div class="md:col-span-2"><strong>Guardian:</strong><br>${[form.guardian_fname.value, form.guardian_mname.value, form.guardian_lname.value, form.guardian_name_ext.value].filter(Boolean).join(' ')}</div>
+                <div class="md:col-span-2"><strong>Address:</strong><br>Purok ${form.purok.value}, ${brgyText}, Labo, Camarines Norte</div>
+            </div>
+            </div>
+        `;
+
+                confirmModal.showModal();
+            });
+
+            // Confirm submit
+            confirmSubmit.addEventListener('click', () => {
+                form.submit();
+            });
         });
-
-        // Confirm → actual submit
-        confirmSubmit.addEventListener('click', () => {
-            form.submit();
-        });
-    });
-</script>
+    </script>
 {% endblock %}
